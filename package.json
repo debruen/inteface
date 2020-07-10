@@ -1,0 +1,25 @@
+{
+  "name": "IA",
+  "version": "0.0.0",
+  "description": "image audio conversion",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/whyturbocharge/image-audio.git"
+  },
+  "author": "Florian de Brün",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/whyturbocharge/image-audio/issues"
+  },
+  "homepage": "https://github.com/whyturbocharge/image-audio#readme",
+  "devDependencies": {
+    "electron": "^9.1.0"
+  },
+  "dependencies": {
+    "ia": "~/Desktop/local_modules/ia"
+  }
+}

@@ -1,5 +1,5 @@
 
-const ImageAudio = require('ia')
+const ImageAudio = require('../ia')
 
 class Program {
 

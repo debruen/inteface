@@ -20,10 +20,6 @@
     "electron": "^9.1.0"
   },
   "dependencies": {
-    "ia": "whyturbocharge/ia#main",
-    "//": [
-      "local: ../ia",
-      "github: whyturbocharge/ia#main"
-    ]
+    "ia": "github: whyturbocharge/ia#main"
   }
 }

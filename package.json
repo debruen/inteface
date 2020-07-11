@@ -18,5 +18,12 @@
   "homepage": "https://github.com/whyturbocharge/image-audio#readme",
   "devDependencies": {
     "electron": "^9.1.0"
+  },
+  "dependencies": {
+    "ia": "whyturbocharge/ia#main",
+    "//": [
+      "local: ../ia",
+      "github: whyturbocharge/ia#main"
+    ]
   }
 }

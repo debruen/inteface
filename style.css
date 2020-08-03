@@ -14,38 +14,38 @@ body {
 }
 
 #main {
-  left: 20px;
-  bottom: 20px;
-  height: 60px;
+  left: 10px;
+  bottom: 10px;
+  height: 100px;
 }
 
 #in {
-  left: 20px;
-  bottom: 100px;
+  left: 10px;
+  bottom: 120px;
 }
 
 #out {
-  right: 20px;
-  bottom: 20px;
-  height: 60px;
+  right: 10px;
+  bottom: 10px;
+  height: 100px;
 }
 
 #preview { /* the PREVIEW */
   position: absolute;
-  top: 20px;
-  right: 140px;
+  top: 10px;
+  right: 110px;
 }
 
 #prelistening { /* the PREVIEW */
   position: absolute;
-  right: 20px;
-  bottom: 100px;
+  right: 10px;
+  bottom: 120px;
 }
 #manual_control {
   position: absolute;
   height: 20px;
-  right: 20px;
-  bottom: 100px;
+  right: 10px;
+  bottom: 120px;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 12px;
   color: rgba(64, 64, 64, 0.8);
@@ -54,28 +54,33 @@ body {
 
 #out_left {
   position: absolute;
-  right: 80px;
-  top: 20px;
+  right: 60px;
+  top: 10px;
   width: 40px;
   background-color: #fff;
 }
 
 #out_right {
   position: absolute;
-  right: 20px;
-  top: 20px;
+  right: 10px;
+  top: 10px;
   width: 40px;
   background-color: #fff;
 }
 
 audio {
   height: 20px;
+  color: rgba(64, 64, 64, 0.8);
 }
 audio:focus {
   outline: none;
 }
 
 /* input elements */
+.formula {
+  font-size: 8pX;
+}
+
 .right {
   display: inline-block;
   float: right;

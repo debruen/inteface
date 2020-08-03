@@ -44,7 +44,7 @@ class Preview extends Events{
   } // init
 
   set_data(data) {
-    this.canvas.height = window.innerHeight - this.canvas.offsetTop * 8
+    this.canvas.height = window.innerHeight - this.canvas.offsetTop * 16
     this.canvas.width = this.canvas.height / Math.SQRT2
 
     this.out_left.height = this.canvas.height

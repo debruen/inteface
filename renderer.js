@@ -28,19 +28,20 @@ const resize = () => {
   const width = height / Math.SQRT2
 
   const main = document.getElementById('main')
-  main.style.width = window.innerWidth - width - main.offsetLeft * 3 - 120 + 'px'
+  // main.style.width = window.innerWidth - width - main.offsetLeft * 3 - 120 + 'px'
+  main.style.width = window.innerWidth / 2 - main.offsetLeft * 1.5  + 'px'
 
   const ins = document.getElementById('in')
-  ins.style.width = window.innerWidth - width - ins.offsetLeft * 3 - 120 + 'px'
+  ins.style.width = window.innerWidth - width - ins.offsetLeft * 1.5 - 120 + 'px'
 
   const out = document.getElementById('out')
-  out.style.width = width + 120 + 'px'
+  out.style.width = window.innerWidth / 2 - main.offsetLeft * 1.5 + 'px'
 
   const audio = document.getElementById('prelistening')
-  audio.style.width = width + 120 + 'px'
+  audio.style.width = width + 100 + 'px'
 
   const audio_preview = document.getElementById('manual_control')
-  audio_preview.style.width = width + 120 + 'px'
+  audio_preview.style.width = width + 100 + 'px'
 
 } // resize
 

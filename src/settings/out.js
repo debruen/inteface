@@ -1,5 +1,6 @@
 
 const Events = require('events')
+const { loadAndTypeset } = require("mathjax-electron");
 
 class Out extends Events {
 
@@ -30,13 +31,16 @@ class Out extends Events {
   } // init
 
   init_image() {
+    // get template
     const raw = document.querySelector('#template_image_out').content.querySelector('div')
     const template = document.importNode(raw, true)
 
+    // get input elements
     this.select = template.getElementsByClassName('select')
     this.slider = template.getElementsByClassName('slider')
     this.value = template.getElementsByClassName('value')
     this.radio = template.getElementsByClassName('radio')
+    this.formula = template.getElementsByClassName('formula')
 
     this.select[0].value = this.data.out_mode
 
@@ -50,14 +54,28 @@ class Out extends Events {
     this.select[2].value = this.data.channel_b
     this.select[3].value = this.data.channel_c
 
+    this.formula[0].innerHTML = "$a = \\sqrt[12]{2}^{" +this.select[1].options[this.data.channel_a].text + "*12}$"
+    loadAndTypeset(document, this.formula[0])
+
+    let basefreq, shiftKeys
+
     if(this.data.keyboard == 97) {
       this.radio[0].checked = true
-      // this.math[0].append('16.3516')
+      basefreq = 16.3516
+      shiftKeys = 85
     }
     if(this.data.keyboard == 88) {
       this.radio[1].checked = true
-      // this.math[0].append('27.5000')
+      basefreq = 27.5000
+      shiftKeys = 76
     }
+
+    this.formula[0].innerHTML = "$Base frequency = 2 ^ {" + this.select[1].options[this.select[1].value].text + "} * " + basefreq + "Hz$"
+    loadAndTypeset(document, this.formula[0])
+    this.formula[1].innerHTML = "$Volume = Signal * " + this.select[2].options[this.select[2].value].text + "$"
+    loadAndTypeset(document, this.formula[1])
+    this.formula[2].innerHTML = "$Frequency = \\sqrt[12]{2} ^ {" + this.select[3].options[this.select[3].value].text + " * " + shiftKeys + "} * Base frequency$"
+    loadAndTypeset(document, this.formula[2])
 
     this.container.insertBefore(template, this.container.firstChild)
 
@@ -67,7 +85,7 @@ class Out extends Events {
   image_comline() {
 
     this.select[0].addEventListener("change", () => {
-      this.data.data.out_mode = this.select[0].value
+      this.data.out_mode = this.select[0].value
       this.send()
     }, false)
 
@@ -88,7 +106,7 @@ class Out extends Events {
     }, false)
 
     this.select[1].addEventListener("change", () => {
-      this.data.channel_a = parseInt(his.select[1].value)
+      this.data.channel_a = parseInt(this.select[1].value)
       this.send()
     }, false)
     this.select[2].addEventListener("change", () => {

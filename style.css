@@ -172,7 +172,7 @@ button[type=button]:focus {
 }
 
 /* Slider ( input[type=range] ) */
-input[type=range]{
+input[type=range] {
   -webkit-appearance: none;
   padding-bottom: 2px;
   background-color: rgb(240, 240, 240);

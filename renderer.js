@@ -1,18 +1,33 @@
 
-const homedir = require('os').homedir()
 const fs = require('fs')
 
+// require program parts
+const Program  = require('./src/program')
+const Settings = require('./src/settings')
+const Preview  = require('./src/preview')
+
+// get user directory
+const homedir = require('os').homedir()
+
+// define initial data (filenam, output directory)
+// later defined by program settings menu
 const ia_data = {
   filename: 'ia ',
   output:  homedir + '/Desktop/IA_output/'
 }
 
+const data_object = {
+  file_naming: '', // string
+  save_path: '', // string
+  mode: '', // string
+  frames: '', // int
+  time: '', // int
+  files: '', // array of strings
+  processes: '', // array of objects
+  conversion: '' // object
+}
+
 if(!fs.existsSync(ia_data.output)) fs.mkdirSync(ia_data.output)
-
-const Program  = require('./src/program')
-
-const Settings = require('./src/settings')
-const Preview  = require('./src/preview')
 
 const program  = new Program(ia_data)
 

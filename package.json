@@ -1,6 +1,6 @@
 {
-  "name": "ia",
-  "version": "0.0",
+  "name": "interface",
+  "version": "0.0.0",
   "description": "",
   "main": "main.js",
   "scripts": {
@@ -9,19 +9,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/whyturbocharge/image-audio.git"
+    "url": "git+https://github.com/whyturbocharge/interface.git"
   },
   "author": "Florian de Brün",
   "license": "",
   "bugs": {
-    "url": "https://github.com/whyturbocharge/image-audio/issues"
+    "url": "https://github.com/whyturbocharge/interface/issues"
   },
-  "homepage": "https://github.com/whyturbocharge/image-audio#readme",
+  "homepage": "https://github.com/whyturbocharge/interface#readme",
   "devDependencies": {
     "electron": "^13.2.0"
   },
   "dependencies": {
-    "ia": "../ia",
-    "mathjax-electron": "^3.0.0"
+    "d3-color": "^3.0.1",
+    "program": "../program"
   }
 }

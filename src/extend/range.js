@@ -1,20 +1,20 @@
 
-const Events = require('events')
+const Extend = require('../extend.js')
 
-class Range extends Events{
+class Range extends Extend{
 
-  constructor(options, div) {
+  constructor(options, parent) {
     super()
 
-    this.data
+    this.name          = 'range'
+    this.settingsWidth = options.settingsWidth
+    this.margin        = options.margin
+    this.parent        = parent
 
-    this.div = document.createElement('DIV')
-    this.div.style.display = 'inline-block'
-    this.div.style.marginRight = options.margin + 'px'
-    this.div.style.marginTop = options.margin / 2 + 'px'
+    this.div = this.parentDiv()
 
-    this.label = document.createElement('LABEL')
-    this.label.style.marginRight = options.margin / 2 + 'px'
+    this.name = document.createElement('LABEL')
+    this.name.style.marginRight = options.margin / 2 + 'px'
 
     this.range = document.createElement('INPUT')
     this.range.type = 'range'
@@ -24,11 +24,13 @@ class Range extends Events{
     this.value.style.display = 'inline-block'
     this.value.style.textAlign = 'right'
 
-    this.div.appendChild(this.label)
+    this.div.appendChild(this.name)
     this.div.appendChild(this.range)
     this.div.appendChild(this.value)
 
-    div.appendChild(this.div)
+    parent.appendChild(this.div)
+
+    this.data
 
   } // constructor
 
@@ -36,10 +38,10 @@ class Range extends Events{
 
     this.data = data
 
-    this.label.innerHTML = data.label + ':'
-    this.label.for = data.label
+    this.name.innerHTML = data.name + ':'
+    this.name.for = data.name
 
-    this.range.name = data.label
+    this.range.name = data.name
 
     this.range.min = data.min
     this.range.max = data.max
@@ -106,9 +108,6 @@ class Range extends Events{
 
   listener() {
 
-    let timeout = false   // holder for timeout id
-    const delay = Math.floor(Math.random() * 10)     // delay after event is "complete" to run callback
-
     this.range.addEventListener("input", () => {
       this.draw()
     }, false)
@@ -121,11 +120,7 @@ class Range extends Events{
         this.data.value = parseFloat(this.range.value)
       }
 
-      clearTimeout(timeout)
-      timeout = setTimeout(() => {
-        console.log(this.data.label + ' update')
-        this.emit('update', this.data)
-      }, delay)
+      this.emit('update', this.data)
 
     }, false)
 

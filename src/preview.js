@@ -1,7 +1,7 @@
 
-const Events = require('events')
+const Extend = require('./extend.js')
 
-class Display extends Events{
+class Preview extends Extend{
 
   constructor(options) {
     super()
@@ -21,6 +21,7 @@ class Display extends Events{
 
     this.canvas = document.createElement('CANVAS')
     this.canvas.style.position = 'absolute'
+    this.canvas.style.border = '1px solid blue'
 
     this.outLeft = document.createElement('CANVAS')
     this.outLeft.style.position = 'absolute'
@@ -56,26 +57,41 @@ class Display extends Events{
     let AudioContext = window.AudioContext || window.webkitAudioContext
     this.audioContext = new AudioContext({ sampleRate: 44100.0 })
 
-    this.imageBuffer
-    this.audioBufferL
-    this.audioBufferR
+    this.images
+    this.left
+    this.right
+
+    this.type
+    this.width
+    this.height
+    this.frames
+    this.time
+    this.direction
 
     this.interval
   } // constructor
 
-  buffer(data) {
+  update(data) {
 
     this.data = data
 
-    const audioframes = this.data.input[2].value / 1000 * 44100.0
+    this.type = this.get_string('type')
 
-    const imageBuffer = new ArrayBuffer(this.data.width * this.data.height * 4 * this.data.input[1].value)
-    const audioBuffer = this.audioContext.createBuffer(2, audioframes, 44100.0)
+    this.width = this.get_width('preview')
+    this.height = this.get_height('preview')
+    this.frames = this.get_num('frames')
+    this.time = this.get_num('time')
+    this.direction = this.get_string('direction')
+
+    const audio_frames = this.time / 1000 * 44100.0
+
+    const images = new ArrayBuffer(this.width * this.height * 4 * this.frames)
+    const audio  = this.audioContext.createBuffer(2, audio_frames, 44100.0)
 
     // This gives us the actual ArrayBuffer that contains the data
-    this.imageBuffer  = new Uint8ClampedArray(imageBuffer)
-    this.audioBufferL = audioBuffer.getChannelData(0)
-    this.audioBufferR = audioBuffer.getChannelData(1)
+    this.images  = new Uint8ClampedArray(images)
+    this.left    = audio.getChannelData(0)
+    this.right   = audio.getChannelData(1)
 
   } // buffer END
 
@@ -84,11 +100,11 @@ class Display extends Events{
     this.setStyles()
 
     // create image
-    const imageLength = this.imageBuffer.length / this.data.input[1].value
+    const imageLength = this.images.length / this.frames
 
     let imageData = []
 
-    for (let i = 0; i < this.data.input[1].value; i++) {
+    for (let i = 0; i < this.frames; i++) {
       let imageArray = new Uint8ClampedArray(imageLength)
 
       const start = i * imageLength
@@ -96,36 +112,41 @@ class Display extends Events{
       let f = 0
 
       for (let a = start; a < stop; a++) {
-        imageArray[f] = this.imageBuffer[a]
+        imageArray[f] = this.images[a]
         f++
       }
 
-      imageData.push( new ImageData(imageArray, this.data.width, this.data.height) )
+      imageData.push( new ImageData(imageArray, this.width, this.height) )
     }
     const ctx = this.canvas.getContext("2d")
 
     // create audio
-    const audioframes = this.audioBufferL.length
-    const pagetime = ( this.data.input[2].value / 1000 ) / this.data.input[1].value
+    const audioframes = this.left.length
+    const pagetime = ( this.time / 1000 ) / this.frames
 
     let audioBuffer = this.audioContext.createBuffer(2, audioframes, this.audioContext.sampleRate)
     let audioBufferL = audioBuffer.getChannelData(0)
     let audioBufferR = audioBuffer.getChannelData(1)
 
     for (let i = 0; i < audioBufferL.length; i++) {
-      audioBufferL[i] = this.audioBufferL[i]
-      audioBufferR[i] = this.audioBufferR[i]
+      audioBufferL[i] = this.left[i]
+      audioBufferR[i] = this.right[i]
     }
 
     this.audio.src = URL.createObjectURL(this.bufferToWave(audioBuffer, audioframes))
 
     // draw image and audio graphical
     // this.drawCanvas(imageData[0])
+
+    ctx.fillStyle = "blue";
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
     ctx.putImageData(imageData[0], 0, 0)
+
     this.drawOut(0)
 
     let interval = []
-    for (let i = 0; i < this.data.input[1].value; i++) {
+    for (let i = 0; i < this.frames; i++) {
       interval.push(pagetime * i)
     }
 
@@ -150,7 +171,7 @@ class Display extends Events{
     const ctxL = this.outLeft.getContext('2d')
     const ctxR = this.outRight.getContext('2d')
 
-    const pageframes = Math.round(this.audioBufferL.length / this.data.input[1].value)
+    const pageframes = Math.round(this.left.length / this.frames)
 
     const start = Math.round(frame * pageframes)
     const stop = Math.round((frame + 1) * pageframes)
@@ -159,13 +180,13 @@ class Display extends Events{
     let audioR = []
 
     for (let a = start; a < stop; a++) {
-      audioL.push(this.audioBufferL[a])
-      audioR.push(this.audioBufferR[a])
+      audioL.push(this.left[a])
+      audioR.push(this.right[a])
     }
 
     let width, height, c = 0, xL, xR, yL, yR
 
-    if (this.data.input[4].value == 'right' || this.data.input[4].value == 'left') {
+    if (this.direction == 'right' || this.direction == 'left') {
 
       ctxL.fillStyle = 'rgba(255, 255, 255, 1)'
       ctxR.fillStyle = 'rgba(255, 255, 255, 1)'
@@ -188,7 +209,7 @@ class Display extends Events{
       for (let i = 0; i <  width; i++) {
 
         for (let j = 0; j < height - 1; j++) {
-          if (this.data.input[4].value == 'left') {
+          if (this.direction == 'left') {
             xL = width - 1 - i
             xR = width - 1 - i
           } else {
@@ -229,7 +250,7 @@ class Display extends Events{
       for (let i = 0; i <  height; i++) {
 
         for (let j = 0; j < width - 1; j++) {
-          if (this.data.input[4].value == 'down') {
+          if (this.direction == 'down') {
             xL = i
             xR = i
           } else {
@@ -253,29 +274,29 @@ class Display extends Events{
   setStyles() {
 
     // spacer and audio
-    if (this.data.input[4].value == 'right' || this.data.input[4].value == 'left') {
+    if (this.direction == 'right' || this.direction == 'left') {
 
-      this.spacer.style.width = this.data.width + this.options.margin * 2 + 'px'
+      this.spacer.style.width = this.width + this.options.margin * 2 + 'px'
       this.spacer.style.height = '1px'
 
-      this.audio.style.top = this.data.height + this.options.audio * 2 + this.options.margin * 4 + 'px'
+      this.audio.style.top = this.height + this.options.audio * 2 + this.options.margin * 4 + 'px'
       this.audio.style.left = this.options.margin + 'px'
-      this.audio.style.width = this.data.width + 'px'
+      this.audio.style.width = this.width + 'px'
 
     } else {
 
-      this.spacer.style.width = this.data.width + this.options.margin * 4 + this.options.audio * 2 + 'px'
+      this.spacer.style.width = this.width + this.options.margin * 4 + this.options.audio * 2 + 'px'
       this.spacer.style.height = '1px'
 
-      this.audio.style.top = this.data.height + this.options.margin * 2 + 'px'
+      this.audio.style.top = this.height + this.options.margin * 2 + 'px'
       this.audio.style.left = this.options.margin + 'px'
-      this.audio.style.width = this.data.width + (this.options.audio + this.options.margin) * 2 + 'px'
+      this.audio.style.width = this.width + (this.options.audio + this.options.margin) * 2 + 'px'
 
     }
 
     // set canvas position
-    if (this.data.input[0].value == 'audio') {
-      if (this.data.input[4].value == 'right' || this.data.input[4].value == 'left') {
+    if (this.type  == 'audio') {
+      if (this.direction == 'right' || this.direction == 'left') {
         this.canvas.style.top = this.options.audio * 2 + this.options.margin * 3 + 'px'
         this.canvas.style.left = this.options.margin + 'px'
 
@@ -289,21 +310,21 @@ class Display extends Events{
     }
 
     // set canvas size
-    this.canvas.width = this.data.width
-    this.canvas.height = this.data.height
+    this.canvas.width = this.width
+    this.canvas.height = this.height
 
     // audio graphical
-    if (this.data.input[4].value == 'right' || this.data.input[4].value == 'left') {
+    if (this.direction == 'right' || this.direction == 'left') {
 
-      if (this.data.input[0].value == 'audio') {
+      if (this.type  == 'audio') {
         this.outLeft.style.top =  this.options.margin + 'px'
         this.outRight.style.top = this.options.audio + this.options.margin * 2 + 'px'
         this.labelLeft.style.top = parseInt(this.outLeft.style.top) + this.options.audio + 'px'
         this.labelRight.style.top = parseInt(this.outRight.style.top) + this.options.audio + 'px'
 
       } else {
-        this.outLeft.style.top =  this.data.height + this.options.margin * 2 + 'px'
-        this.outRight.style.top = this.data.height + this.options.audio + this.options.margin * 3 + 'px'
+        this.outLeft.style.top =  this.height + this.options.margin * 2 + 'px'
+        this.outRight.style.top = this.height + this.options.audio + this.options.margin * 3 + 'px'
         this.labelLeft.style.top = parseInt(this.outLeft.style.top) - this.options.margin + 'px'
         this.labelRight.style.top = parseInt(this.outRight.style.top) - this.options.margin + 'px'
       }
@@ -312,10 +333,10 @@ class Display extends Events{
 
       this.outRight.style.left = this.options.margin + 'px'
 
-      this.outLeft.width = this.data.width
+      this.outLeft.width = this.width
       this.outLeft.height = this.options.audio
 
-      this.outRight.width = this.data.width
+      this.outRight.width = this.width
       this.outRight.height = this.options.audio
 
       this.labelLeft.style.left = this.options.margin + 'px'
@@ -328,7 +349,7 @@ class Display extends Events{
       this.labelRight.style.height = this.options.margin + 'px'
       this.labelRight.style.transform = 'rotate(0deg)'
 
-      if (this.data.input[4].value == 'left') {
+      if (this.direction == 'left') {
         this.labelLeft.style.direction = 'rtl'
         this.labelRight.style.direction = 'rtl'
 
@@ -343,25 +364,25 @@ class Display extends Events{
       this.outLeft.style.top = this.options.margin + 'px'
       this.outRight.style.top = this.options.margin + 'px'
 
-      if (this.data.input[0].value == 'audio') {
+      if (this.type  == 'audio') {
         this.outLeft.style.left = this.options.margin + 'px'
 
         this.outRight.style.left = this.options.audio + this.options.margin * 2 + 'px'
         this.labelLeft.style.left = parseInt(this.outLeft.style.left) + this.options.audio + this.options.margin + 'px'
         this.labelRight.style.left = parseInt(this.outRight.style.left) + this.options.audio + this.options.margin + 'px'
       } else {
-        this.outLeft.style.left = 2 * this.options.margin + this.data.width + 'px'
+        this.outLeft.style.left = 2 * this.options.margin + this.width + 'px'
 
-        this.outRight.style.left = 3 * this.options.margin + this.data.width + this.options.audio + 'px'
+        this.outRight.style.left = 3 * this.options.margin + this.width + this.options.audio + 'px'
         this.labelLeft.style.left = parseInt(this.outLeft.style.left) + 'px'
         this.labelRight.style.left = parseInt(this.outRight.style.left) + 'px'
       }
 
       this.outLeft.width = this.options.audio
-      this.outLeft.height = this.data.height
+      this.outLeft.height = this.height
 
       this.outRight.width = this.options.audio
-      this.outRight.height = this.data.height
+      this.outRight.height = this.height
 
       this.labelLeft.style.top = this.options.margin + 'px'
       this.labelLeft.style.width = this.outLeft.height + 'px'
@@ -381,7 +402,7 @@ class Display extends Events{
 
       // this.labelRight.style.writingMode = 'vertical-rl'
 
-      if (this.data.input[4].value == 'up') {
+      if (this.direction == 'up') {
         this.labelLeft.style.top = this.outLeft.height + 'px'
         this.labelRight.style.top = this.outRight.height + 'px'
         this.labelLeft.style.transformOrigin = 'bottom left'
@@ -458,6 +479,6 @@ class Display extends Events{
     }
   } // bufferToWave END
 
-} // Display
+} // Preview
 
-module.exports = Display
+module.exports = Preview

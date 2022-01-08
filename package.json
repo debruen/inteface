@@ -12,18 +12,15 @@
     "url": "git+https://github.com/whyturbocharge/image-audio.git"
   },
   "author": "Florian de Brün",
-  "license": "MIT",
+  "license": "",
   "bugs": {
     "url": "https://github.com/whyturbocharge/image-audio/issues"
   },
   "homepage": "https://github.com/whyturbocharge/image-audio#readme",
   "devDependencies": {
-    "electron": "^9.1.0"
+    "electron": "^13.2.0"
   },
   "dependencies": {
-    "//": [
-      "whyturbocharge/ia#main"
-    ],
     "ia": "../ia",
     "mathjax-electron": "^3.0.0"
   }

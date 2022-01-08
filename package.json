@@ -1,6 +1,6 @@
 {
-  "name": "electron-cpp-async",
-  "version": "0.0.0",
+  "name": "interface",
+  "version": "0.0",
   "description": "",
   "main": "main.js",
   "scripts": {
@@ -10,16 +10,16 @@
     "electron": "^14.0.1"
   },
   "dependencies": {
-    "node-cpp-async": "../node-cpp-async"
+    "program": "../program"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/whyturbocharge/electron-cpp-async.git"
+    "url": "git+https://github.com/debruen/interface.git"
   },
   "author": "Florian de Brün",
   "license": "",
   "bugs": {
-    "url": "https://github.com/whyturbocharge/electron-cpp-async/issues"
+    "url": "https://github.com/debruen/interface/issues"
   },
-  "homepage": "https://github.com/whyturbocharge/electron-cpp-async#readme"
+  "homepage": "https://github.com/debruen/interface"
 }

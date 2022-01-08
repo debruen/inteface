@@ -49,7 +49,7 @@ app.on('window-all-closed', async function () {
 
 // code
 
-const Program = require('node-cpp-async')
+const Program = require('program')
 
 program = new Program
 

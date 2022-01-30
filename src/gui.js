@@ -20,10 +20,10 @@ class Gui extends Extend{
       font: parseFloat(window.getComputedStyle(document.body).fontSize)
     }
 
-    this.settings   = new Settings(this.options)
-    this.filter  = new Filter(this.options)
-    this.output  = new Output(this.options)
-    this.preview = new Preview(this.options)
+    this.settings = new Settings(this.options)
+    this.filter   = new Filter(this.options)
+    this.output   = new Output(this.options)
+    this.preview  = new Preview(this.options)
 
     this.type
 

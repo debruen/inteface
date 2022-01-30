@@ -10,7 +10,7 @@
     "electron": "^16.0.6"
   },
   "dependencies": {
-    "program": "../program"
+    "program": "../p_program"
   },
   "repository": {
     "type": "git",

@@ -49,18 +49,22 @@ app.on('window-all-closed', async () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
+program.main()
+
 app.on('will-quit', async () => {
-  const quit = await program.quit()
+  const result = await program.quit()
+  await console.log(result)
 })
 
 
-ipcMain.on('io-data', async () => {
+ipcMain.on('io-init', async () => {
   const result = await program.data()
-  mainWindow.webContents.send('oi-data', result)
+  mainWindow.webContents.send('oi-init', result)
 })
 
 ipcMain.on('io-update', async (err, data) => {
   const result = await program.update(data)
+
   mainWindow.webContents.send('oi-update', result)
 })
 

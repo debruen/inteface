@@ -25,7 +25,7 @@ class Gui extends Extend{
     this.output   = new Output(this.options)
     this.preview  = new Preview(this.options)
 
-    // obsolete !? 
+    // obsolete !?
     this.type
 
     this.data
@@ -34,7 +34,7 @@ class Gui extends Extend{
   } // constructor
 
   init() {
-    ipcRenderer.send('io-data')
+    ipcRenderer.send('io-init')
 
     this.comline()
   } // init
@@ -73,7 +73,7 @@ class Gui extends Extend{
     })
 
     // recive (default) data
-    ipcRenderer.on('oi-data', (event, result) => {
+    ipcRenderer.on('oi-init', (event, result) => {
 
       this.data = result
       this.type = this.get_string('type', this.data['settings'])

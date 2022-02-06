@@ -49,7 +49,7 @@ app.on('window-all-closed', async () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-program.main()
+const p = program.main()
 
 app.on('will-quit', async () => {
   const result = await program.quit()

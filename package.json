@@ -10,6 +10,7 @@
     "electron": "^17.0.0"
   },
   "dependencies": {
+    "audiobuffer-to-wav": "^1.0.0",
     "program": "../p_program"
   },
   "repository": {

@@ -30,18 +30,23 @@ class Gui extends Extend{
 
     this.data
 
-    this.init()
-  } // constructor
+    this.data()
+  }
 
-  init() {
-    ipcRenderer.send('io-init')
-
+  data() {
+    ipcRenderer.send('data')
     this.comline()
-  } // init
+  }
 
   update() {
-    ipcRenderer.send('io-update', this.data)
-  } // sendData
+    ipcRenderer.send('update', this.data)
+  }
+
+  read() {
+    ipcRenderer.send('read', this.preview.images, this.preview.left, this.preview.right)
+  }
+
+
 
   process() {
     ipcRenderer.send('io-preview', this.preview.images, this.preview.left, this.preview.right)
@@ -73,7 +78,7 @@ class Gui extends Extend{
     })
 
     // recive (default) data
-    ipcRenderer.on('oi-init', (event, result) => {
+    ipcRenderer.on('data', (event, result) => {
 
       this.data = result
       this.type = this.get_string('type', this.data['settings'])
@@ -85,7 +90,7 @@ class Gui extends Extend{
     })
 
     // data update
-    ipcRenderer.on('oi-update', (event, result) => {
+    ipcRenderer.on('update', (event, result) => {
 
       this.data = result
       this.type = this.get_string('type', this.data['settings'])

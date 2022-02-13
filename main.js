@@ -76,8 +76,14 @@ ipcMain.on('update', async (err, data) => {
 
 ipcMain.on('read', async (err, image, left, right, frameIndex) => {
   await program.read(image, left, right, frameIndex)
-  mainWindow.webContents.send('oi-preview', image, left, right, frameIndex)
+  mainWindow.webContents.send('read', image, left, right, frameIndex)
 })
+
+ipcMain.on('next', async (err, image, left, right, frameIndex) => {
+  await program.read(image, left, right, frameIndex)
+  mainWindow.webContents.send('next', image, left, right, frameIndex)
+})
+
 
 app.on('will-quit', async () => {
   const result = await program.quit()

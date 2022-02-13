@@ -58,18 +58,20 @@ class Preview extends Extend{
     let AudioContext = window.AudioContext || window.webkitAudioContext
     this.audioContext = new AudioContext({ sampleRate: 44100.0 })
 
-    this.images
+    this.image
     this.left
     this.right
 
     this.type
     this.width
     this.height
-    this.frames
     this.time
     this.direction
 
-    this.interval
+    this.frame = 0
+    this.play = false
+
+    this.comline()
   } // constructor
 
   update(data) {
@@ -80,50 +82,64 @@ class Preview extends Extend{
 
     this.width = this.get_width('preview')
     this.height = this.get_height('preview')
-    this.frames = this.get_num('frames')
-    this.time = this.get_num('time')
+    this.time = this.get_num('frame time')
     this.direction = this.get_string('direction')
 
     const audio_frames = this.time / 1000 * 44100.0
 
-    const images = new ArrayBuffer(this.width * this.height * 4 * this.frames)
+    const image = new ArrayBuffer(this.width * this.height * 4)
     const audio  = this.audioContext.createBuffer(2, audio_frames, 44100.0)
 
     // This gives us the actual ArrayBuffer that contains the data
-    this.images  = new Uint8ClampedArray(images)
+    this.image  = new Uint8ClampedArray(image)
     this.left    = audio.getChannelData(0)
     this.right   = audio.getChannelData(1)
 
   } // buffer END
+
+  comline() {
+
+    this.audio.addEventListener('play', (event) => {
+      console.log('play')
+
+      this.play = true
+      this.emit('play')
+    })
+
+    this.audio.addEventListener('pause', (event) => {
+
+      if(this.audio.currentTime != this.audio.duration) {
+        console.log('pause')
+        this.play = false
+      }
+
+    })
+
+    this.audio.addEventListener('ended', (event) => {
+      console.log('ended')
+
+      this.frame = this.frame + 1
+      this.draw()
+    })
+
+  }
 
   draw() {
 
     this.setStyles()
 
     // create image
-    const imageLength = this.images.length / this.frames
+    const imageLength = this.image.length
 
-    let imageData = []
+    const imageArray = new Uint8ClampedArray(this.image)
 
-    for (let i = 0; i < this.frames; i++) {
-      let imageArray = new Uint8ClampedArray(imageLength)
+    const imageData = new ImageData(imageArray, this.width, this.height)
 
-      const start = i * imageLength
-      const stop = (i + 1) * imageLength
-      let f = 0
-
-      for (let a = start; a < stop; a++) {
-        imageArray[f] = this.images[a]
-        f++
-      }
-
-      imageData.push( new ImageData(imageArray, this.width, this.height) )
-    }
     const ctx = this.canvas.getContext("2d")
 
     // create audio
     const audioframes = this.left.length
-    const pagetime = ( this.time / 1000 ) / this.frames
+    const pagetime = this.time
 
     let audioBuffer = this.audioContext.createBuffer(2, audioframes, this.audioContext.sampleRate)
     let audioBufferL = audioBuffer.getChannelData(0)
@@ -140,56 +156,29 @@ class Preview extends Extend{
     const url = window.URL.createObjectURL(blob);
     this.audio.src = url;
 
-    // this.audio.src = URL.createObjectURL(this.bufferToWave(audioBuffer, audioframes))
-    // this.audio.src = URL.createObjectURL(audioBufferToWav(audioBuffer))
-
-    // draw image and audio graphical
-    // this.drawCanvas(imageData[0])
-
     ctx.fillStyle = "blue";
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    ctx.putImageData(imageData[0], 0, 0)
+    ctx.putImageData(imageData, 0, 0)
 
-    this.drawOut(0)
+    this.drawOut()
 
-    let interval = []
-    for (let i = 0; i < this.frames; i++) {
-      interval.push(pagetime * i)
-    }
+    if(this.play) this.audio.play()
+  }
 
-    clearInterval(this.interval)
-    let frame = 0
-    this.interval = setInterval(() => {
-      for (let i = 0; i < interval.length; i++) {
-        if(this.audio.currentTime > interval[i]) {
-          if(frame != i) {
-            // this.drawCanvas(imageData[i])
-            ctx.putImageData(imageData[i], 0, 0)
-            this.drawOut(i)
-            frame = i
-          }
-        }
-      }
-    }, 100)
-  } // audioControl END
-
-  drawOut(frame) {
+  drawOut() {
 
     const ctxL = this.outLeft.getContext('2d')
     const ctxR = this.outRight.getContext('2d')
 
-    const pageframes = Math.round(this.left.length / this.frames)
-
-    const start = Math.round(frame * pageframes)
-    const stop = Math.round((frame + 1) * pageframes)
+    const pageframes = Math.round(this.left.length)
 
     let audioL = []
     let audioR = []
 
-    for (let a = start; a < stop; a++) {
-      audioL.push(this.left[a])
-      audioR.push(this.right[a])
+    for (let i = 0; i < pageframes; i++) {
+      audioL.push(this.left[i])
+      audioR.push(this.right[i])
     }
 
     let width, height, c = 0, xL, xR, yL, yR

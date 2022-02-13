@@ -37,13 +37,16 @@ class Gui extends Extend{
   }
 
   read() {
-    ipcRenderer.send('read', this.preview.images, this.preview.left, this.preview.right, 0)
+    ipcRenderer.send('read', this.preview.image, this.preview.left, this.preview.right, this.preview.frame)
+  }
+
+  next() {
+    ipcRenderer.send('next', this.preview.image, this.preview.left, this.preview.right, this.preview.frame + 1)
   }
 
 
-
   process() {
-    ipcRenderer.send('io-preview', this.preview.images, this.preview.left, this.preview.right)
+    ipcRenderer.send('io-preview', this.preview.image, this.preview.left, this.preview.right)
   } // sendBuffer
 
   save() {
@@ -79,11 +82,21 @@ class Gui extends Extend{
     // read received
     ipcRenderer.on('read', (event, image, left, right) => {
 
-      this.preview.images = image
+      this.preview.image = image
       this.preview.left = left
       this.preview.right = right
 
       this.preview.draw()
+
+      // update buffer (image and audio)
+    })
+
+    // read received
+    ipcRenderer.on('next', (event, image, left, right) => {
+
+      this.preview.image = image
+      this.preview.left = left
+      this.preview.right = right
 
       // update buffer (image and audio)
     })
@@ -102,6 +115,11 @@ class Gui extends Extend{
       this.data.output = data;
       this.update()
     })
+
+    this.preview.on('play', () => {
+      this.next()
+    })
+
 
     this.output.on('save', () => {
       this.save()

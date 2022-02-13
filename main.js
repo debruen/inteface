@@ -92,12 +92,12 @@ app.on('will-quit', async () => {
 
 
 
-ipcMain.on('io-preview', async (err, images, left, right) => {
-  await program.preview(images, left, right)
-  mainWindow.webContents.send('oi-preview', images, left, right)
-})
-
-ipcMain.on('io-save', async () => {
-  await program.save()
-  mainWindow.webContents.send('oi-save', 'saved')
-})
+// ipcMain.on('io-preview', async (err, images, left, right) => {
+//   await program.preview(images, left, right)
+//   mainWindow.webContents.send('oi-preview', images, left, right)
+// })
+//
+// ipcMain.on('io-save', async () => {
+//   await program.save()
+//   mainWindow.webContents.send('oi-save', 'saved')
+// })

@@ -45,13 +45,13 @@ class Gui extends Extend{
   }
 
 
-  process() {
-    ipcRenderer.send('io-preview', this.preview.image, this.preview.left, this.preview.right)
-  } // sendBuffer
-
-  save() {
-    ipcRenderer.send('io-save')
-  }
+  // process() {
+  //   ipcRenderer.send('io-preview', this.preview.image, this.preview.left, this.preview.right)
+  // } // sendBuffer
+  //
+  // save() {
+  //   ipcRenderer.send('io-save')
+  // }
 
   comline() {
 
@@ -121,26 +121,26 @@ class Gui extends Extend{
     })
 
 
-    this.output.on('save', () => {
-      this.save()
-    })
+    // this.output.on('save', () => {
+    //   this.save()
+    // })
 
-    // preview
-    ipcRenderer.on('oi-preview', (event, images, left, right) => {
-
-      this.preview.images = images
-      this.preview.left = left
-      this.preview.right = right
-
-      this.preview.draw()
-
-      // update buffer (image and audio)
-    })
-
-    // save
-    ipcRenderer.on('oi-save', (event, result) => {
-      console.log(result)
-    })
+    // // preview
+    // ipcRenderer.on('oi-preview', (event, images, left, right) => {
+    //
+    //   this.preview.images = images
+    //   this.preview.left = left
+    //   this.preview.right = right
+    //
+    //   this.preview.draw()
+    //
+    //   // update buffer (image and audio)
+    // })
+    //
+    // // save
+    // ipcRenderer.on('oi-save', (event, result) => {
+    //   console.log(result)
+    // })
   } // comline
 
 } // Gui

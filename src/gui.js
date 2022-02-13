@@ -25,17 +25,11 @@ class Gui extends Extend{
     this.output   = new Output(this.options)
     this.preview  = new Preview(this.options)
 
-    // obsolete !?
-    this.type
-
     this.data
 
-    this.data()
-  }
-
-  data() {
-    ipcRenderer.send('data')
     this.comline()
+
+    ipcRenderer.send('data')
   }
 
   update() {
@@ -43,7 +37,7 @@ class Gui extends Extend{
   }
 
   read() {
-    ipcRenderer.send('read', this.preview.images, this.preview.left, this.preview.right)
+    ipcRenderer.send('read', this.preview.images, this.preview.left, this.preview.right, 0)
   }
 
 
@@ -57,6 +51,42 @@ class Gui extends Extend{
   }
 
   comline() {
+
+    // data received
+    ipcRenderer.on('data', (event, data) => {
+      this.data = data
+      const type = this.get_string('type', this.data['settings'])
+
+      this.settings.init(this.data['settings'])
+      this.filter.init(this.data['filter'], type)
+      this.output.init(this.data['output'])
+    })
+
+    // update received
+    ipcRenderer.on('update', (event, data) => {
+      this.data = data
+      const type = this.get_string('type', this.data['settings'])
+
+      this.settings.update(this.data['settings'])
+      this.filter.update(this.data['filter'], type)
+      this.output.update(this.data['output'])
+
+      this.preview.update(this.data['settings']);
+
+      this.read()
+    })
+
+    // read received
+    ipcRenderer.on('read', (event, image, left, right) => {
+
+      this.preview.images = image
+      this.preview.left = left
+      this.preview.right = right
+
+      this.preview.draw()
+
+      // update buffer (image and audio)
+    })
 
     this.settings.on('update', (data) => {
       this.data.settings = data;
@@ -75,33 +105,6 @@ class Gui extends Extend{
 
     this.output.on('save', () => {
       this.save()
-    })
-
-    // recive (default) data
-    ipcRenderer.on('data', (event, result) => {
-
-      this.data = result
-      this.type = this.get_string('type', this.data['settings'])
-
-      this.settings.init(this.data['settings'])
-      this.filter.init(this.data['filter'], this.type)
-      this.output.init(this.data['output'])
-
-    })
-
-    // data update
-    ipcRenderer.on('update', (event, result) => {
-
-      this.data = result
-      this.type = this.get_string('type', this.data['settings'])
-
-      this.settings.update(this.data['settings'])
-      this.filter.update(this.data['filter'], this.type)
-      this.output.update(this.data['output'])
-
-      this.preview.update(this.data['settings']);
-
-      this.process()
     })
 
     // preview

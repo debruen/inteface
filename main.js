@@ -2,8 +2,16 @@
 const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
 
+
+// --- --- --- --- --- --- * --- --- --- --- --- ---
+
+
 const Program = require('program')
 const program = new Program
+
+
+// --- --- --- --- --- --- * --- --- --- --- --- ---
+
 
 let mainWindow
 
@@ -49,11 +57,15 @@ app.on('window-all-closed', async () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-// const p = program.main()
+
+// --- --- --- --- --- --- * --- --- --- --- --- ---
+
 
 ipcMain.on('data', async () => {
-  const result = await program.data()
-  mainWindow.webContents.send('data', result)
+
+  const data = await program.data()
+
+  mainWindow.webContents.send('data', data)
 })
 
 ipcMain.on('update', async (err, data) => {
@@ -62,9 +74,9 @@ ipcMain.on('update', async (err, data) => {
   mainWindow.webContents.send('update', result)
 })
 
-ipcMain.on('read', async (err, images, left, right) => {
-  // await program.preview(images, left, right)
-  // mainWindow.webContents.send('oi-preview', images, left, right)
+ipcMain.on('read', async (err, image, left, right, frameIndex) => {
+  await program.read(image, left, right, frameIndex)
+  mainWindow.webContents.send('oi-preview', image, left, right, frameIndex)
 })
 
 app.on('will-quit', async () => {

@@ -128,15 +128,36 @@ class Preview extends Extend{
 
     this.setStyles()
 
+    this.makeAudio()
+
+    this.drawImage()
+
+    this.drawAudio()
+
+    if(this.play) this.audio.play()
+  }
+
+  drawImage() {
     // create image
     const imageLength = this.image.length
 
-    const imageArray = new Uint8ClampedArray(this.image)
+    let imageArray = new Uint8ClampedArray(imageLength)
+
+    for (let i = 0; i < imageLength; i++) {
+      imageArray[i] = this.image[i]
+    }
 
     const imageData = new ImageData(imageArray, this.width, this.height)
 
     const ctx = this.canvas.getContext("2d")
 
+    ctx.fillStyle = "blue";
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    ctx.putImageData(imageData, 0, 0)
+  }
+
+  makeAudio() {
     // create audio
     const audioframes = this.left.length
     const pagetime = this.time
@@ -151,22 +172,12 @@ class Preview extends Extend{
     }
 
     const opt = {float32: 3}
-
     const blob = new Blob([audioBufferToWav(audioBuffer, opt)], { type: "audio/wav" });
     const url = window.URL.createObjectURL(blob);
     this.audio.src = url;
-
-    ctx.fillStyle = "blue";
-    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-    ctx.putImageData(imageData, 0, 0)
-
-    this.drawOut()
-
-    if(this.play) this.audio.play()
   }
 
-  drawOut() {
+  drawAudio() {
 
     const ctxL = this.outLeft.getContext('2d')
     const ctxR = this.outRight.getContext('2d')
@@ -266,7 +277,7 @@ class Preview extends Extend{
       }
     }
 
-  } // draw_page
+  } // drawAudio
 
   setStyles() {
 

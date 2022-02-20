@@ -82,7 +82,7 @@ class Gradient extends Extend{
     this.phasRange.type = 'range'
     this.phasRange.style.width = rangeWidth
     this.phasRange.style.marginRight = smallMargin
-    this.phasRange.min = -1
+    this.phasRange.min = 0
     this.phasRange.max = 1
     this.phasRange.step = 0.01
 

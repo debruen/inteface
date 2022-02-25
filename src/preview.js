@@ -15,7 +15,8 @@ class Preview extends Extend{
     this.div.style.position = 'absolute'
     this.div.style.left = '600px'
     this.div.style.top = '0px'
-    this.div.style.marginRight = this.options.margin + 'px'
+    this.div.id = 'display'
+    // this.div.style.marginRight = this.options.margin + 'px'
 
     this.spacer = document.createElement('DIV')
     this.spacer.style.position = 'absolute'
@@ -103,7 +104,6 @@ class Preview extends Extend{
       console.log('play')
 
       this.play = true
-      this.emit('play')
     })
 
     this.audio.addEventListener('pause', (event) => {
@@ -112,19 +112,22 @@ class Preview extends Extend{
         console.log('pause')
         this.play = false
       }
-
+      // this.emit('pause')
     })
 
     this.audio.addEventListener('ended', (event) => {
       console.log('ended')
 
       this.frame = this.frame + 1
+      this.emit('play')
       this.draw()
     })
 
   }
 
   draw() {
+
+    console.log("preview frames: " + this.frame)
 
     this.setStyles()
 

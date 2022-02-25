@@ -4,9 +4,10 @@ const { ipcRenderer } = require('electron')
 const Extend = require('./extend.js')
 
 const Settings = require('./settings.js')
-const Filter  = require('./filter.js')
-const Output  = require('./output.js')
-const Preview = require('./preview.js')
+const Filter   = require('./filter.js')
+const Output   = require('./output.js')
+const Preview  = require('./preview.js')
+const Display  = require('./display.js')
 
 class Gui extends Extend{
 
@@ -25,6 +26,8 @@ class Gui extends Extend{
     this.output   = new Output(this.options)
     this.preview  = new Preview(this.options)
 
+    this.display  = new Display(this.options)
+
     this.data
 
     this.comline()
@@ -41,17 +44,12 @@ class Gui extends Extend{
   }
 
   next() {
-    ipcRenderer.send('next', this.preview.image, this.preview.left, this.preview.right, this.preview.frame + 1)
+    ipcRenderer.send('next', this.preview.image, this.preview.left, this.preview.right, this.preview.frame)
   }
 
-
-  // process() {
-  //   ipcRenderer.send('io-preview', this.preview.image, this.preview.left, this.preview.right)
-  // } // sendBuffer
-  //
-  // save() {
-  //   ipcRenderer.send('io-save')
-  // }
+  buffer(data, image) {
+    ipcRenderer.send('buffer', data, image)
+  }
 
   comline() {
 
@@ -63,6 +61,8 @@ class Gui extends Extend{
       this.settings.init(this.data['settings'])
       this.filter.init(this.data['filter'], type)
       this.output.init(this.data['output'])
+
+      this.display.init(this.data['settings'])
     })
 
     // update received
@@ -76,11 +76,18 @@ class Gui extends Extend{
 
       this.preview.update(this.data['settings']);
 
+      this.display.update(this.data['settings'])
+
       this.read()
     })
 
     // read received
     ipcRenderer.on('read', (event, image, left, right) => {
+
+      this.data['settings'] = this.data_update(this.data['settings'], "frame", this.preview.frame)
+      this.settings.update(this.data['settings'])
+
+      console.log("read frames: " + this.preview.frame)
 
       this.preview.image = image
       this.preview.left = left
@@ -93,6 +100,11 @@ class Gui extends Extend{
 
     // read received
     ipcRenderer.on('next', (event, image, left, right) => {
+
+      this.data['settings'] = this.data_update(this.data['settings'], "frame", this.preview.frame)
+      this.settings.update(this.data['settings'])
+
+      console.log("next frames: " + this.preview.frame)
 
       this.preview.image = image
       this.preview.left = left
@@ -116,10 +128,17 @@ class Gui extends Extend{
       this.update()
     })
 
+    this.display.on('read', (data, image) => {
+      this.buffer(data, image)
+    })
+
     this.preview.on('play', () => {
       this.next()
     })
 
+    this.preview.on('pause', () => {
+      // this.next()
+    })
 
     // this.output.on('save', () => {
     //   this.save()

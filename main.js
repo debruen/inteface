@@ -84,12 +84,15 @@ ipcMain.on('next', async (err, image, left, right, frameIndex) => {
   mainWindow.webContents.send('next', image, left, right, frameIndex)
 })
 
+ipcMain.on('buffer', async (err, data, image) => {
+  await program.buffer(data, image)
+  mainWindow.webContents.send('buffer', data, image)
+})
 
 app.on('will-quit', async () => {
   const result = await program.quit()
   await console.log(result)
 })
-
 
 
 // ipcMain.on('io-preview', async (err, images, left, right) => {

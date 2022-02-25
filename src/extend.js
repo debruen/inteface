@@ -205,6 +205,16 @@ class Extend extends Events {
     this.data[index].height = height
   }
 
+  data_update(data, name, value) {
+
+    const index = data.findIndex(d => d.name == name)
+
+    /// writing data to data
+    data[index].value = value;
+
+    return data
+  }
+
   update_data(data) {
 
     const index = this.data.findIndex(d => d.name == data.name)

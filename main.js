@@ -62,45 +62,31 @@ app.on('window-all-closed', async () => {
 
 
 ipcMain.on('data', async () => {
-
   const data = await program.data()
-
   mainWindow.webContents.send('data', data)
 })
 
 ipcMain.on('update', async (err, data) => {
   const result = await program.update(data)
-
   mainWindow.webContents.send('update', result)
 })
 
-ipcMain.on('read', async (err, image, left, right, frameIndex) => {
-  await program.read(image, left, right, frameIndex)
-  mainWindow.webContents.send('read', image, left, right, frameIndex)
-})
-
-ipcMain.on('next', async (err, image, left, right, frameIndex) => {
-  await program.read(image, left, right, frameIndex)
-  mainWindow.webContents.send('next', image, left, right, frameIndex)
-})
+// ipcMain.on('read', async (err, image, left, right, frameIndex) => {
+//   await program.read(image, left, right, frameIndex)
+//   mainWindow.webContents.send('read', image, left, right, frameIndex)
+// })
+//
+// ipcMain.on('next', async (err, image, left, right, frameIndex) => {
+//   await program.read(image, left, right, frameIndex)
+//   mainWindow.webContents.send('next', image, left, right, frameIndex)
+// })
 
 ipcMain.on('buffer', async (err, data, image) => {
-  await program.buffer(data, image)
-  mainWindow.webContents.send('buffer', data, image)
+  const result = await program.buffer(data, image)
+  mainWindow.webContents.send('buffer', result, image)
 })
 
 app.on('will-quit', async () => {
   const result = await program.quit()
   await console.log(result)
 })
-
-
-// ipcMain.on('io-preview', async (err, images, left, right) => {
-//   await program.preview(images, left, right)
-//   mainWindow.webContents.send('oi-preview', images, left, right)
-// })
-//
-// ipcMain.on('io-save', async () => {
-//   await program.save()
-//   mainWindow.webContents.send('oi-save', 'saved')
-// })

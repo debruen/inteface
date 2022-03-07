@@ -14,7 +14,6 @@ class Display extends Extend{
 
     this.options = options
 
-
     this.control = document.createElement('div')
     this.control.style.display = 'block'
     this.control.style.position = 'absolute'
@@ -167,6 +166,7 @@ class Display extends Extend{
     } else {
       this.record_button.innerHTML = "record"
     }
+
   }
 
   /// send display data

@@ -84,7 +84,7 @@ class Gui extends Extend{
     // read received
     ipcRenderer.on('buffer', (event, data, image) => {
 
-      this.display.data = data
+      this.display.controls(data)
       this.display.image = image
 
       // update buffer (image and audio)

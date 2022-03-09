@@ -48,6 +48,7 @@ class Display extends Extend{
 
     this.play = false
     this.record = false
+    this.block = true
 
     this.updated = false
 
@@ -57,6 +58,12 @@ class Display extends Extend{
     this.update(data)
     this.comline()
     this.display()
+  }
+
+  controls(data) {
+    // this.play = data.play
+    // this.record = data.record
+    this.block = data.block
   }
 
   update(data) {
@@ -134,26 +141,44 @@ class Display extends Extend{
   comline() {
 
     this.play_button.addEventListener("click", () => {
-      if (this.play) {
-        this.play = false
-      } else {
-        this.play = true
-      }
-      this.set_controls()
+        if (this.play) {
+          this.play = false
+          this.record = false
+        } else {
+          this.play = true
+        }
+
     })
 
     this.record_button.addEventListener("click", () => {
-      if (this.record) {
-        this.record = false
-      } else {
-        this.record = true
-      }
-      this.set_controls()
+        if (this.record) {
+          this.record = false
+          this.play = false
+        } else {
+          this.record = true
+        }
+
     })
 
   }
 
   set_controls() {
+
+    if (this.block && !this.play) {
+      this.play = false
+      this.record = false
+      this.play_button.style.cursor = 'default'
+      this.play_button.style.color = 'rgba(128, 128, 128, 0.6)'
+
+      this.record_button.style.cursor = 'default'
+      this.record_button.style.color = 'rgba(128, 128, 128, 0.6)'
+    } else {
+      this.play_button.style.cursor = 'pointer'
+      this.play_button.style.color = 'rgba(64, 64, 64, 0.8)'
+
+      this.record_button.style.cursor = 'pointer'
+      this.record_button.style.color = 'rgba(64, 64, 64, 0.8)'
+    }
 
     if (this.play) {
       this.play_button.innerHTML = "pause"
@@ -177,7 +202,8 @@ class Display extends Extend{
       width: this.image_width * density,
       height: this.image_height * density,
       play: this.play,
-      record: this.record
+      record: this.record,
+      block: this.block
     }
     this.emit('buffer', this.data, this.image)
   }

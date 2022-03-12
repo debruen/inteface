@@ -63,21 +63,24 @@ app.on('window-all-closed', async () => {
 let r = true
 
 ipcMain.on('data', async () => {
-  const data = await program.data()
-  if (r)
+  if(r) {
+    const data = await program.data()
     mainWindow.webContents.send('data', data)
+  }
 })
 
 ipcMain.on('update', async (err, data) => {
-  const result = await program.update(data)
-  if (r)
+  if(r) {
+    const result = await program.update(data)
     mainWindow.webContents.send('update', result)
+  }
 })
 
 ipcMain.on('buffer', async (err, data, image) => {
-  const result = await program.buffer(data, image)
-  if (r)
+  if(r) {
+    const result = await program.buffer(data, image)
     mainWindow.webContents.send('buffer', result, image)
+  }
 })
 
 app.on('will-quit', async () => {

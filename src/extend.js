@@ -181,30 +181,6 @@ class Extend extends Events {
     return this.data[index]
   }
 
-  compute_size(name) {
-    const index = this.data.findIndex(x => x.name == name)
-    const ratio = this.data.find(x => x.name == 'ratio')
-    const direction = this.data.find(x => x.name == 'direction')
-
-    let width, height
-    /// calculating display dimensions
-    if (direction.value == 'right' || direction.value == 'left') {
-      height = Math.round(window.innerHeight - ( this.options.audio * 3 + this.options.margin * 5 ))
-      width  = Math.round(height * ratio.value)
-    } else {
-      height = Math.round(window.innerHeight - ( this.options.audio + this.options.margin * 3 ))
-      width  = Math.round(height * ratio.value)
-    }
-
-    // /// calculating display dimensions
-    // const height = Math.round(window.innerHeight - ( this.options.audio + this.options.margin * 3 ))
-    // const width  = Math.round(height * ratio.value)
-
-    /// writing display dimensions to data
-    this.data[index].width  = width
-    this.data[index].height = height
-  }
-
   data_update(data, name, value) {
 
     const index = data.findIndex(d => d.name == name)

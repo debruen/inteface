@@ -9,7 +9,6 @@ class Settings extends Extend{
   constructor(options) {
     super()
 
-    this.id            = 'settings'
     this.name          = 'settings'
     this.settingsWidth = options.settingsWidth
     this.margin        = options.margin

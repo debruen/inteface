@@ -62,6 +62,13 @@ app.on('window-all-closed', async () => {
 
 let r = true
 
+ipcMain.on('init-controls', async () => {
+  if(r) {
+    const data = await program.data()
+    mainWindow.webContents.send('data', data)
+  }
+})
+
 ipcMain.on('data', async () => {
   if(r) {
     const data = await program.data()

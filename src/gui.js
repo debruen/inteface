@@ -6,6 +6,9 @@ const Extend = require('./extend.js')
 const Settings = require('./settings.js')
 const Filter   = require('./filter.js')
 const Output   = require('./output.js')
+
+const Controls = require('./controls.js')
+
 const Display  = require('./display.js')
 
 class Gui extends Extend{
@@ -24,12 +27,15 @@ class Gui extends Extend{
     this.filter   = new Filter(this.options)
     this.output   = new Output(this.options)
 
+    this.controls  = new Controls(this.options)
+
     this.display  = new Display(this.options)
 
     this.data
 
     this.comline()
 
+    // send data
     ipcRenderer.send('data')
   }
 
@@ -40,6 +46,7 @@ class Gui extends Extend{
   buffer(data, image) {
     ipcRenderer.send('buffer', data, image)
   }
+
 
   comline() {
 

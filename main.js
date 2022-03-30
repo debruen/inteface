@@ -2,6 +2,17 @@
 const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
 
+
+// --- --- --- --- --- --- * --- --- --- --- --- ---
+
+
+const Program = require('program')
+const program = new Program
+
+
+// --- --- --- --- --- --- * --- --- --- --- --- ---
+
+
 let mainWindow
 
 function createWindow () {
@@ -39,60 +50,48 @@ app.whenReady().then(() => {
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
-app.on('window-all-closed', async function () {
-
-  if (preview.platform !== 'darwin') app.quit()
+app.on('window-all-closed', async () => {
+  if (process.platform !== 'darwin') app.quit()
 })
 
-// In this file you can include the rest of your app's specific main preview
+// In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-// code
 
-const Program = require('program')
+// --- --- --- --- --- --- * --- --- --- --- --- ---
 
-program = new Program
+let r = true
 
-const init_func = async () => {
-
-  const result = program.init()
-
-  mainWindow.webContents.send('oi-init', await result)
-}
-
-const update_func = async (data) => {
-
-  const result = await program.update(data)
-
-  mainWindow.webContents.send('oi-update', result)
-}
-
-const preview_func = async (images, left, right) => {
-
-  await program.preview(images, left, right)
-
-  mainWindow.webContents.send('oi-preview', images, left, right)
-}
-
-const save_func = async () => {
-
-  await program.save()
-
-  mainWindow.webContents.send('oi-save', 'saved')
-}
-
-ipcMain.on('io-init', () => {
-  init_func()
+ipcMain.on('init-controls', async () => {
+  if(r) {
+    const data = await program.data()
+    mainWindow.webContents.send('data', data)
+  }
 })
 
-ipcMain.on('io-update', (err, data) => {
-  update_func(data)
+ipcMain.on('data', async () => {
+  if(r) {
+    const data = await program.data()
+    mainWindow.webContents.send('data', data)
+  }
 })
 
-ipcMain.on('io-preview', (err, images, left, right) => {
-  preview_func(images, left, right)
+ipcMain.on('update', async (err, data) => {
+  if(r) {
+    const result = await program.update(data)
+    mainWindow.webContents.send('update', result)
+  }
 })
 
-ipcMain.on('io-save', () => {
-  save_func()
+ipcMain.on('buffer', async (err, data, image) => {
+  if(r) {
+    const result = await program.buffer(data, image)
+    mainWindow.webContents.send('buffer', result, image)
+  }
+})
+
+app.on('will-quit', async () => {
+  r = false
+  const result = await program.quit()
+  await console.log(result)
 })

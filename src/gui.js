@@ -4,9 +4,12 @@ const { ipcRenderer } = require('electron')
 const Extend = require('./extend.js')
 
 const Settings = require('./settings.js')
-const Filter  = require('./filter.js')
-const Output  = require('./output.js')
-const Preview = require('./preview.js')
+const Filter   = require('./filter.js')
+const Output   = require('./output.js')
+
+const Controls = require('./controls.js')
+
+const Display  = require('./display.js')
 
 class Gui extends Extend{
 
@@ -20,37 +23,63 @@ class Gui extends Extend{
       font: parseFloat(window.getComputedStyle(document.body).fontSize)
     }
 
-    this.settings   = new Settings(this.options)
-    this.filter  = new Filter(this.options)
-    this.output  = new Output(this.options)
-    this.preview = new Preview(this.options)
+    this.settings = new Settings(this.options)
+    this.filter   = new Filter(this.options)
+    this.output   = new Output(this.options)
 
-    this.type
+    this.controls  = new Controls(this.options)
+
+    this.display  = new Display(this.options)
 
     this.data
 
-    this.init()
-  } // constructor
-
-  init() {
-    ipcRenderer.send('io-init')
-
     this.comline()
-  } // init
 
-  update() {
-    ipcRenderer.send('io-update', this.data)
-  } // sendData
-
-  process() {
-    ipcRenderer.send('io-preview', this.preview.images, this.preview.left, this.preview.right)
-  } // sendBuffer
-
-  save() {
-    ipcRenderer.send('io-save')
+    // send data
+    ipcRenderer.send('data')
   }
 
+  update() {
+    ipcRenderer.send('update', this.data)
+  }
+
+  buffer(data, image) {
+    ipcRenderer.send('buffer', data, image)
+  }
+
+
   comline() {
+
+    // data received
+    ipcRenderer.on('data', (event, data) => {
+      this.data = data
+      const type = this.get_string('type', this.data['settings'])
+
+      this.settings.init(this.data['settings'])
+      this.filter.init(this.data['filter'], type)
+      this.output.init(this.data['output'])
+
+      this.display.init(this.data['settings'])
+    })
+
+    // update received
+    ipcRenderer.on('update', (event, data) => {
+      this.data = data
+      const type = this.get_string('type', this.data['settings'])
+
+      this.settings.update(this.data['settings'])
+      this.filter.update(this.data['filter'], type)
+      this.output.update(this.data['output'])
+
+      this.display.update(this.data['settings'])
+    })
+
+    // read received
+    ipcRenderer.on('buffer', (event, data, image) => {
+
+      this.display.controls(data)
+      this.display.image = image
+    })
 
     this.settings.on('update', (data) => {
       this.data.settings = data;
@@ -67,53 +96,10 @@ class Gui extends Extend{
       this.update()
     })
 
-    this.output.on('save', () => {
-      this.save()
+    this.display.on('buffer', (data, image) => {
+      this.buffer(data, image)
     })
 
-    // data init
-    ipcRenderer.on('oi-init', (event, result) => {
-
-      this.data = result
-      this.type = this.get_string('type', this.data['settings'])
-
-      this.settings.init(this.data['settings'])
-      this.filter.init(this.data['filter'], this.type)
-      this.output.init(this.data['output'])
-
-    })
-
-    // data update
-    ipcRenderer.on('oi-update', (event, result) => {
-
-      this.data = result
-      this.type = this.get_string('type', this.data['settings'])
-
-      this.settings.update(this.data['settings'])
-      this.filter.update(this.data['filter'], this.type)
-      this.output.update(this.data['output'])
-
-      this.preview.update(this.data['settings']);
-
-      this.process()
-    })
-
-    // preview
-    ipcRenderer.on('oi-preview', (event, images, left, right) => {
-
-      this.preview.images = images
-      this.preview.left = left
-      this.preview.right = right
-
-      this.preview.draw()
-
-      // update buffer (image and audio)
-    })
-
-    // save
-    ipcRenderer.on('oi-save', (event, result) => {
-      console.log(result)
-    })
   } // comline
 
 } // Gui

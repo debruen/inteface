@@ -31,7 +31,7 @@ function createWindow () {
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 }
 
 // This method will be called when Electron has finished
@@ -62,31 +62,47 @@ app.on('window-all-closed', async () => {
 
 let r = true
 
-ipcMain.on('init-controls', async () => {
+ipcMain.on('init-synthesis', async () => {
   if(r) {
-    const data = await program.data()
-    mainWindow.webContents.send('data', data)
+    const data = await program.initSynthesis()
+    mainWindow.webContents.send('init-synthesis', data)
   }
 })
 
-ipcMain.on('data', async () => {
+ipcMain.on('data-synthesis', async (err, data) => {
   if(r) {
-    const data = await program.data()
-    mainWindow.webContents.send('data', data)
+    const result = await program.dataSynthesis(data)
+    mainWindow.webContents.send('data-synthesis', result)
   }
 })
 
-ipcMain.on('update', async (err, data) => {
+ipcMain.on('init-control', async () => {
   if(r) {
-    const result = await program.update(data)
-    mainWindow.webContents.send('update', result)
+    const data = await program.initControl()
+    mainWindow.webContents.send('init-control', data)
   }
 })
 
-ipcMain.on('buffer', async (err, data, image) => {
+ipcMain.on('data-control', async (err, data) => {
   if(r) {
-    const result = await program.buffer(data, image)
-    mainWindow.webContents.send('buffer', result, image)
+    const result = await program.dataControl(data)
+    mainWindow.webContents.send('data-control', result)
+  }
+})
+
+
+ipcMain.on('new-frame', async (err) => {
+  if(r) {
+    const result = await program.dispnewFramelay()
+    mainWindow.webContents.send('new-frame', result)
+  }
+})
+
+ipcMain.on('display', async (err, data, image) => {
+  if(r) {
+    const result = await program.display(data, image)
+
+    mainWindow.webContents.send('display', image)
   }
 })
 

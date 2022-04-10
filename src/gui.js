@@ -7,7 +7,7 @@ const Settings = require('./settings.js')
 const Filter   = require('./filter.js')
 const Output   = require('./output.js')
 
-const Controls = require('./controls.js')
+const Control = require('./control.js')
 
 const Display  = require('./display.js')
 
@@ -27,7 +27,7 @@ class Gui extends Extend{
     this.filter   = new Filter(this.options)
     this.output   = new Output(this.options)
 
-    this.controls  = new Controls(this.options)
+    this.control  = new Control(this.options)
 
     this.display  = new Display(this.options)
 
@@ -36,22 +36,31 @@ class Gui extends Extend{
     this.comline()
 
     // send data
-    ipcRenderer.send('data')
+    ipcRenderer.send('init-synthesis')
+    ipcRenderer.send('init-control')
   }
 
-  update() {
-    ipcRenderer.send('update', this.data)
+  dataSynthesis() {
+    ipcRenderer.send('data-synthesis', this.data)
   }
 
-  buffer(data, image) {
-    ipcRenderer.send('buffer', data, image)
+  dataControl(data) {
+    ipcRenderer.send('data-control', data)
+  }
+
+  newFrame() {
+    ipcRenderer.send('new-frame')
+  }
+
+  display_func(data, image) {
+    ipcRenderer.send('display', data, image)
   }
 
 
   comline() {
 
     // data received
-    ipcRenderer.on('data', (event, data) => {
+    ipcRenderer.on('init-synthesis', (event, data) => {
       this.data = data
       const type = this.get_string('type', this.data['settings'])
 
@@ -63,7 +72,7 @@ class Gui extends Extend{
     })
 
     // update received
-    ipcRenderer.on('update', (event, data) => {
+    ipcRenderer.on('data-synthesis', (event, data) => {
       this.data = data
       const type = this.get_string('type', this.data['settings'])
 
@@ -74,30 +83,45 @@ class Gui extends Extend{
       this.display.update(this.data['settings'])
     })
 
-    // read received
-    ipcRenderer.on('buffer', (event, data, image) => {
+    ipcRenderer.on('init-control', (event, data) => {
+      this.control.init(data)
+    })
 
-      this.display.controls(data)
+    ipcRenderer.on('data-control', (event, data) => {
+      this.control.update(data)
+    })
+
+    // read received
+    ipcRenderer.on('new-frame', (event, data) => {
+      this.display.newFrame = data
+    })
+
+    // read received
+    ipcRenderer.on('display', (event, data, image) => {
       this.display.image = image
     })
 
     this.settings.on('update', (data) => {
       this.data.settings = data;
-      this.update()
+      this.dataSynthesis()
     })
 
     this.filter.on('update', (data) => {
       this.data.filter = data;
-      this.update()
+      this.dataSynthesis()
     })
 
     this.output.on('update', (data) => {
       this.data.output = data;
-      this.update()
+      this.dataSynthesis()
     })
 
-    this.display.on('buffer', (data, image) => {
-      this.buffer(data, image)
+    this.control.on('control', (data) => {
+      this.dataControl(data)
+    })
+
+    this.display.on('display', (data, image) => {
+      this.display_func(data, image)
     })
 
   } // comline

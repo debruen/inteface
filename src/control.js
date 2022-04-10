@@ -61,7 +61,7 @@ class Controls extends Extend{
       if (!this.data.reset)
         this.data.reset = true
 
-      this.controls()
+      this.emit('control', this.data)
     })
 
     this.play_button.addEventListener("click", () => {
@@ -70,14 +70,14 @@ class Controls extends Extend{
       else
         this.data.play = true
 
-      this.controls()
+      this.emit('control', this.data)
     })
 
     this.record_button.addEventListener("click", () => {
       if (!this.data.record)
         this.data.record = true
 
-      this.controls()
+      this.emit('control', this.data)
     })
 
   }
@@ -96,6 +96,8 @@ class Controls extends Extend{
       this.record_button.innerHTML = "save"
       this.record_button.style.cursor = 'pointer'
     }
+
+
 
   }
 

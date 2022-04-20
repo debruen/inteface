@@ -27,14 +27,15 @@ class Filter extends Extend{
   init(data, type) {
     this.type = type
     this.data = data
+    console.log('synthesis init filter')
 
     this.update()
   } // init END
 
   update(data = this.data, type = this.type) {
-
     this.type = type
     this.data = data
+    console.log('synthesis data filter')
 
     let div = this.div.querySelectorAll('div')
     for(let i = 1; i < div.length; i++) {

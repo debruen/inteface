@@ -52,7 +52,7 @@ class Sine extends Extend{
     this.rangeA.style.marginRight = smallMargin
     this.rangeA.min = 0
     this.rangeA.max = 1
-    this.rangeA.step = 0.001
+    this.rangeA.step = 0.0001
 
     this.valueA = document.createElement('SPAN')
     this.valueA.style.display = 'inline-block'
@@ -73,7 +73,7 @@ class Sine extends Extend{
     this.rangeB.style.marginRight = smallMargin
     this.rangeB.min = 0
     this.rangeB.max = 1
-    this.rangeB.step = 0.001
+    this.rangeB.step = 0.0001
 
     this.valueB = document.createElement('SPAN')
     this.valueB.style.display = 'inline-block'
@@ -94,7 +94,7 @@ class Sine extends Extend{
     this.rangeC.style.marginRight = smallMargin
     this.rangeC.min = 0
     this.rangeC.max = 1
-    this.rangeC.step = 0.001
+    this.rangeC.step = 0.0001
 
     this.valueC = document.createElement('SPAN')
     this.valueC.style.display = 'inline-block'
@@ -184,7 +184,7 @@ class Sine extends Extend{
 
     const amplitude = this.rangeB.value
 
-    const phase = Math.round((this.rangeC.value * 2 - 1) * 100) / 100
+    const phase = Math.round((this.rangeC.value) * 100) / 100
 
     this.valueA.innerHTML = frequency
     this.valueB.innerHTML = amplitude

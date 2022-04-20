@@ -62,52 +62,72 @@ app.on('window-all-closed', async () => {
 
 let r = true
 
+// ipcMain.handle('init-synthesis', async (event) => {
+//   const data = await program.initSynthesis()
+//   return data
+// })
+
 ipcMain.on('init-synthesis', async () => {
-  if(r) {
-    const data = await program.initSynthesis()
-    mainWindow.webContents.send('init-synthesis', data)
-  }
+  const result = await program.initSynthesis()
+  mainWindow.webContents.send('init-synthesis', result)
 })
 
 ipcMain.on('data-synthesis', async (err, data) => {
-  if(r) {
-    const result = await program.dataSynthesis(data)
-    mainWindow.webContents.send('data-synthesis', result)
-  }
+  const result = await program.dataSynthesis(data)
+  mainWindow.webContents.send('data-synthesis', result)
 })
 
 ipcMain.on('init-control', async () => {
-  if(r) {
-    const data = await program.initControl()
-    mainWindow.webContents.send('init-control', data)
-  }
+  const data = await program.initControl()
+  mainWindow.webContents.send('init-control', data)
+})
+
+
+// ipcMain.handle('init-control', async (event) => {
+//   const data = await program.initControl()
+//   return data
+// })
+
+ipcMain.on('init-control', async (err, data) => {
+  const result = await program.initControl()
+  mainWindow.webContents.send('init-control', result)
 })
 
 ipcMain.on('data-control', async (err, data) => {
-  if(r) {
-    const result = await program.dataControl(data)
-    mainWindow.webContents.send('data-control', result)
-  }
+  const result = await program.dataControl(data)
+  mainWindow.webContents.send('data-control', result)
 })
 
 
-ipcMain.on('new-frame', async (err) => {
-  if(r) {
-    const result = await program.dispnewFramelay()
-    mainWindow.webContents.send('new-frame', result)
-  }
+ipcMain.handle('record', async (event) => {
+  console.log('main record');
+  return image = await program.record()
 })
 
-ipcMain.on('display', async (err, data, image) => {
-  if(r) {
-    const result = await program.display(data, image)
 
-    mainWindow.webContents.send('display', image)
+// ipcMain.handle('data-synthesis', async (event, data) => {
+//   const result = await program.dataSynthesis(data)
+//   return result
+// })
+
+// ipcMain.handle('data-control', async (event, data) => {
+//   const result = await program.dataControl(data)
+//   return result
+// })
+
+
+
+// display
+// ipcMain.handle('new-frame', async (event) => {
+//   return await program.newFrame()
+// })
+ipcMain.handle('display', async (event, data, image) => {
+  if(await program.display(data, image)) {
+    return image
   }
 })
 
 app.on('will-quit', async () => {
-  r = false
+  // await mainWindow.webContents.send('quit-display')
   const result = await program.quit()
-  await console.log(result)
 })

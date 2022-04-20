@@ -1,9 +1,7 @@
 
-const Extend = require('./extend.js')
+const { ipcRenderer } = require('electron')
 
-const Select = require('./extend/select.js')
-const Range  = require('./extend/range.js')
-const Button  = require('./extend/button.js')
+const Extend = require('./extend.js')
 
 class Controls extends Extend{
 
@@ -61,7 +59,7 @@ class Controls extends Extend{
       if (!this.data.reset)
         this.data.reset = true
 
-      this.emit('control', this.data)
+      this.emit('data-control', this.data)
     })
 
     this.play_button.addEventListener("click", () => {
@@ -70,14 +68,22 @@ class Controls extends Extend{
       else
         this.data.play = true
 
-      this.emit('control', this.data)
+      this.emit('data-control', this.data)
     })
 
     this.record_button.addEventListener("click", () => {
-      if (!this.data.record)
+      if (!this.data.record) {
+        console.log('control record');
         this.data.record = true
-
-      this.emit('control', this.data)
+        this.record_button.innerHTML = "saving ..."
+        this.record_button.style.cursor = 'default';
+        (async () => {
+          this.data.record = await ipcRenderer.invoke('record')
+          console.log('data record: ' + this.data.record)
+          this.record_button.innerHTML = "save"
+          this.record_button.style.cursor = 'pointer'
+        })()
+      }
     })
 
   }
@@ -88,16 +94,6 @@ class Controls extends Extend{
       this.play_button.innerHTML = "pause"
     else
       this.play_button.innerHTML = "play"
-
-    if (this.data.record) {
-      this.record_button.innerHTML = "saving ..."
-      this.record_button.style.cursor = 'default'
-    } else {
-      this.record_button.innerHTML = "save"
-      this.record_button.style.cursor = 'pointer'
-    }
-
-
 
   }
 

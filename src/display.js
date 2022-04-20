@@ -1,115 +1,85 @@
 
-const P5 = require('p5')
+const { ipcRenderer } = require('electron')
 
-const Extend = require('./extend.js')
+class Display{
 
-const Select = require('./extend/select.js')
-const Range  = require('./extend/range.js')
-const Button = require('./extend/button.js')
+  constructor(global_data) {
 
-class Display extends Extend{
+    // read .column
+    // read .margin
+    // read .audio
+    // read .ratio
+    // read .direction
+    this.global_data = global_data
 
-  constructor(options) {
-    super()
+    this.canvas = document.createElement('CANVAS')
+    this.canvas.style.position = 'absolute'
+    this.canvas.style.left = this.global_data.column + this.global_data.margin + 'px'
+    this.canvas.style.top = this.global_data.margin + 'px'
 
-    this.options = options
+    document.body.appendChild(this.canvas)
 
-    this.data
-
-    this.ratio
-    this.direction
-
-    this.image
-
-    this.image_width
-    this.image_height
-
-    this.newFrame
-    this.updated = false
-
-  } // constructor END
-
-  init(data) {
-    this.update(data)
-    this.display()
+    // this.quit = false
+    this.listener()
+    // this.thread()
   }
 
-  update(data) {
-    const ratio     = data.find(x => x.name == 'ratio')
-    const time      = data.find(x => x.name == 'frame time')
-    const direction = data.find(x => x.name == 'direction')
+  // thread() {
+  //   while(!this.quit) {
+  //     (async () => {
+  //       if(await ipcRenderer.invoke('new-frame')) {
+  //         this.draw()
+  //       }
+  //     })()
+  //   }
+  // }
 
-    if (this.ratio != ratio.value || this.time != time.value || this.direction != direction.value) {
-      this.ratio     = ratio.value
-      this.time      = time.value
-      this.direction = direction.value
+  draw() {
 
-      this.size()
-      this.updated = true
+    let width
+    let height
+
+    if (this.global_data.direction == 'right' || this.global_data.direction == 'left') {
+      height = Math.round(window.innerHeight - ( this.global_data.audio * 3 + this.global_data.margin * 5 ))
+      width  = Math.round(height * this.global_data.ratio)
+    } else {
+      height = Math.round(window.innerHeight - ( this.global_data.audio + this.global_data.margin * 3 ))
+      width  = Math.round(height * this.global_data.ratio)
     }
+
+    console.log('display width: ' + width);
+    console.log('display height: ' + height);
+
+    this.canvas.width = width
+    this.canvas.height = height
+
+    const density = window.devicePixelRatio;
+    const buffer  = new ArrayBuffer((width * density) * (height * density) * 4)
+    const image   = new Uint8ClampedArray(buffer)
+
+    const data = {
+      width: width * density,
+      height: height * density,
+    };
+
+    (async () => {
+      const frame = await ipcRenderer.invoke('display', data, image)
+      const imageData = await new ImageData(frame, width * density, height * density)
+      const ctx = await this.canvas.getContext("2d")
+      ctx.putImageData(imageData, 0, 0)
+    })()
+
   }
 
-  /// start p5 sketch
-  display() {
-
-    const p5 = new P5((sketch) => {
-
-      sketch.setup = () => {
-        let canvas = sketch.createCanvas(this.image_width, this.image_height)
-        canvas.position(this.options.settingsWidth + this.options.margin, this.options.margin)
-      }
-
-      sketch.draw = () => {
-        if(this.updated) {
-          sketch.resizeCanvas(this.image_width, this.image_height)
-          this.updated = false
-        }
-        this.read()
-
-        /// write buffer to canvas
-        sketch.loadPixels()
-        for (let i = 0; i < this.image.length; i++) {
-          sketch.pixels[i] = this.image[i]
-        }
-        sketch.updatePixels()
-
-        // sketch.background(0,0,255)
-      }
-
-      sketch.windowResized = () => {
-        this.size()
-        sketch.resizeCanvas(this.image_width, this.image_height)
-      }
-
+  listener() {
+    window.addEventListener('resize', () => {
+      console.log('- window resize')
+      this.draw()
     })
 
-  }
-
-  /// calculating image size
-  size() {
-
-    if (this.direction == 'right' || this.direction == 'left') {
-      this.image_height = Math.round(window.innerHeight - ( this.options.audio * 3 + this.options.margin * 5 ))
-      this.image_width  = Math.round(this.image_height * this.ratio)
-    } else {
-      this.image_height = Math.round(window.innerHeight - ( this.options.audio + this.options.margin * 3 ))
-      this.image_width  = Math.round(this.image_height * this.ratio)
-    }
-
-    const density = window.devicePixelRatio;
-    const image = new ArrayBuffer((this.image_width * density) * (this.image_height * density) * 4)
-    this.image  = new Uint8ClampedArray(image)
-
-  }
-
-
-  read() {
-    const density = window.devicePixelRatio;
-    this.data = {
-      width: this.image_width * density,
-      height: this.image_height * density,
-    }
-    this.emit('display', this.data, this.image)
+    // ipcRenderer.on('quit-display', (event) => {
+    //   this.quit = true
+    // })
   }
 
 }

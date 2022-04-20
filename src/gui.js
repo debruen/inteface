@@ -3,9 +3,7 @@ const { ipcRenderer } = require('electron')
 
 const Extend = require('./extend.js')
 
-const Settings = require('./settings.js')
-const Filter   = require('./filter.js')
-const Output   = require('./output.js')
+const Synthesis = require('./synthesis.js')
 
 const Control = require('./control.js')
 
@@ -13,119 +11,79 @@ const Display  = require('./display.js')
 
 class Gui extends Extend{
 
-  constructor(options) {
+  constructor() {
     super()
 
-    this.options = {
+    const global_data = {
       settingsWidth: 600,
+      column: 600,
       margin: 10,
       audio: 60,
+      ratio: 0.5,
+      direction: 'up',
       font: parseFloat(window.getComputedStyle(document.body).fontSize)
     }
 
-    this.settings = new Settings(this.options)
-    this.filter   = new Filter(this.options)
-    this.output   = new Output(this.options)
-
-    this.control  = new Control(this.options)
-
-    this.display  = new Display(this.options)
-
-    this.data
+    this.synthesis = new Synthesis(global_data)
+    this.control = new Control(global_data)
+    this.display = new Display(global_data)
 
     this.comline()
 
-    // send data
-    ipcRenderer.send('init-synthesis')
-    ipcRenderer.send('init-control')
+    // ipcRenderer.send('init-synthesis')
+    // ipcRenderer.send('init-control')
+
   }
 
-  dataSynthesis() {
-    ipcRenderer.send('data-synthesis', this.data)
-  }
-
-  dataControl(data) {
-    ipcRenderer.send('data-control', data)
-  }
-
-  newFrame() {
-    ipcRenderer.send('new-frame')
-  }
-
-  display_func(data, image) {
-    ipcRenderer.send('display', data, image)
-  }
-
+  // async init() {
+  //   console.log('init');
+  //   const synth_data = await ipcRenderer.invoke('init-synthesis')
+  //   console.log('init-synthesis')
+  //   await this.synthesis.init(synth_data)
+  //   await this.display.init()
+  //
+  //   const control_data = await ipcRenderer.invoke('init-control')
+  //   console.log('init-control')
+  //   await this.control.init(control_data)
+  // }
 
   comline() {
 
-    // data received
+    // --- synthesis
+    ipcRenderer.send('init-synthesis')
+
     ipcRenderer.on('init-synthesis', (event, data) => {
-      this.data = data
-      const type = this.get_string('type', this.data['settings'])
-
-      this.settings.init(this.data['settings'])
-      this.filter.init(this.data['filter'], type)
-      this.output.init(this.data['output'])
-
-      this.display.init(this.data['settings'])
+      console.log('gui init-synthesis')
+      this.synthesis.init(data)
+      this.display.draw()
     })
 
-    // update received
+    this.synthesis.on('data-synthesis', async (data) => {
+      ipcRenderer.send('data-synthesis', data)
+    })
+
     ipcRenderer.on('data-synthesis', (event, data) => {
-      this.data = data
-      const type = this.get_string('type', this.data['settings'])
-
-      this.settings.update(this.data['settings'])
-      this.filter.update(this.data['filter'], type)
-      this.output.update(this.data['output'])
-
-      this.display.update(this.data['settings'])
+      console.log('gui data-synthesis')
+      this.synthesis.update(data)
+      this.display.draw()
     })
+
+    ipcRenderer.send('init-control')
 
     ipcRenderer.on('init-control', (event, data) => {
       this.control.init(data)
+    })
+
+    this.control.on('data-control', async (data) => {
+      ipcRenderer.send('data-control', data)
     })
 
     ipcRenderer.on('data-control', (event, data) => {
       this.control.update(data)
     })
 
-    // read received
-    ipcRenderer.on('new-frame', (event, data) => {
-      this.display.newFrame = data
-    })
+  }
 
-    // read received
-    ipcRenderer.on('display', (event, data, image) => {
-      this.display.image = image
-    })
-
-    this.settings.on('update', (data) => {
-      this.data.settings = data;
-      this.dataSynthesis()
-    })
-
-    this.filter.on('update', (data) => {
-      this.data.filter = data;
-      this.dataSynthesis()
-    })
-
-    this.output.on('update', (data) => {
-      this.data.output = data;
-      this.dataSynthesis()
-    })
-
-    this.control.on('control', (data) => {
-      this.dataControl(data)
-    })
-
-    this.display.on('display', (data, image) => {
-      this.display_func(data, image)
-    })
-
-  } // comline
-
-} // Gui
+}
 
 module.exports = Gui

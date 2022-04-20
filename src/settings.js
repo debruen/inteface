@@ -9,7 +9,7 @@ class Settings extends Extend{
   constructor(options) {
     super()
 
-    this.name          = 'settings'
+    this.name = 'settings'
     this.settingsWidth = options.settingsWidth
     this.margin        = options.margin
 
@@ -21,11 +21,16 @@ class Settings extends Extend{
     this.data
 
     this.array = []
-  } // constructor END
+  }
 
   init(data) {
-
     this.data = data
+    console.log('synthesis init settings')
+
+    const ratio     = data.find(x => x.name == 'ratio')
+    const direction = data.find(x => x.name == 'direction')
+    this.options.ratio = ratio.value
+    this.options.direction = direction.value
 
     this.data.forEach((d, i) => {
       if(d.form == "select") {
@@ -43,8 +48,13 @@ class Settings extends Extend{
   } // init END
 
   update(data = this.data) {
-
     this.data = data
+    console.log('synthesis data settings')
+
+    const ratio     = data.find(x => x.name == 'ratio')
+    const direction = data.find(x => x.name == 'direction')
+    this.options.ratio = ratio.value
+    this.options.direction = direction.value
 
     this.data.forEach((d) => {
       this.update_array(d);

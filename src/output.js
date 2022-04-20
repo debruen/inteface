@@ -27,8 +27,8 @@ class Output extends Extend{
   } // constructor END
 
   init(data) {
-
     this.data = data
+    console.log('synthesis init output')
 
     let i = 0
     this.data.forEach((d, i) => {
@@ -53,8 +53,8 @@ class Output extends Extend{
   } // init
 
   update(data = this.data) {
-
     this.data = data
+    console.log('synthesis data output')
 
     this.data.forEach((d, i) => {
       this.array[i].update(d)

@@ -25,7 +25,6 @@ class Settings extends Extend{
 
   init(data) {
     this.data = data
-    console.log('synthesis init settings')
 
     const ratio     = data.find(x => x.name == 'ratio')
     const direction = data.find(x => x.name == 'direction')
@@ -49,7 +48,6 @@ class Settings extends Extend{
 
   update(data = this.data) {
     this.data = data
-    console.log('synthesis data settings')
 
     const ratio     = data.find(x => x.name == 'ratio')
     const direction = data.find(x => x.name == 'direction')

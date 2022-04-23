@@ -1,9 +1,14 @@
 
 const { ipcRenderer } = require('electron')
 
-class Display{
+const Extend = require('./extend.js')
+
+const P5 = require('p5')
+
+class Display extends Extend{
 
   constructor(global_data) {
+    super()
 
     // read .column
     // read .margin
@@ -19,20 +24,27 @@ class Display{
 
     document.body.appendChild(this.canvas)
 
-    // this.quit = false
     this.listener()
-    // this.thread()
+    this.thread()
   }
 
-  // thread() {
-  //   while(!this.quit) {
-  //     (async () => {
-  //       if(await ipcRenderer.invoke('new-frame')) {
-  //         this.draw()
-  //       }
-  //     })()
-  //   }
-  // }
+  /// start p5 sketch
+  thread() {
+
+    const p5 = new P5((sketch) => {
+
+      sketch.setup = () => {
+        let canvas = sketch.createCanvas(0, 0)
+        canvas.position(0, 0)
+      }
+
+      sketch.draw = () => {
+        ipcRenderer.send('new-frame')
+      }
+
+    })
+
+  }
 
   draw() {
 
@@ -46,9 +58,6 @@ class Display{
       height = Math.round(window.innerHeight - ( this.global_data.audio + this.global_data.margin * 3 ))
       width  = Math.round(height * this.global_data.ratio)
     }
-
-    console.log('display width: ' + width);
-    console.log('display height: ' + height);
 
     this.canvas.width = width
     this.canvas.height = height
@@ -73,8 +82,14 @@ class Display{
 
   listener() {
     window.addEventListener('resize', () => {
-      console.log('- window resize')
       this.draw()
+    })
+
+    ipcRenderer.on('new-frame', (event, data) => {
+      if (data.done) {
+        this.emit('done', data.done)
+      }
+      if (data.new) this.draw()
     })
 
     // ipcRenderer.on('quit-display', (event) => {

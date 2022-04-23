@@ -7,7 +7,7 @@
     "start": "electron ."
   },
   "devDependencies": {
-    "electron": "^18.0.1"
+    "electron": "^18.0.4"
   },
   "dependencies": {
     "audiobuffer-to-wav": "^1.0.0",

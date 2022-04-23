@@ -48,7 +48,6 @@ class Button extends Events{
 
       clearTimeout(timeout)
       timeout = setTimeout(() => {
-        console.log(this.data.name + ' update')
         this.emit('update', this.data)
       }, delay)
     })

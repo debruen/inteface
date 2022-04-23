@@ -30,22 +30,7 @@ class Gui extends Extend{
 
     this.comline()
 
-    // ipcRenderer.send('init-synthesis')
-    // ipcRenderer.send('init-control')
-
   }
-
-  // async init() {
-  //   console.log('init');
-  //   const synth_data = await ipcRenderer.invoke('init-synthesis')
-  //   console.log('init-synthesis')
-  //   await this.synthesis.init(synth_data)
-  //   await this.display.init()
-  //
-  //   const control_data = await ipcRenderer.invoke('init-control')
-  //   console.log('init-control')
-  //   await this.control.init(control_data)
-  // }
 
   comline() {
 
@@ -53,7 +38,6 @@ class Gui extends Extend{
     ipcRenderer.send('init-synthesis')
 
     ipcRenderer.on('init-synthesis', (event, data) => {
-      console.log('gui init-synthesis')
       this.synthesis.init(data)
       this.display.draw()
     })
@@ -63,7 +47,6 @@ class Gui extends Extend{
     })
 
     ipcRenderer.on('data-synthesis', (event, data) => {
-      console.log('gui data-synthesis')
       this.synthesis.update(data)
       this.display.draw()
     })
@@ -80,6 +63,11 @@ class Gui extends Extend{
 
     ipcRenderer.on('data-control', (event, data) => {
       this.control.update(data)
+    })
+
+    this.display.on('done', async (data) => {
+      this.control.data.play = false
+      this.control.controls()
     })
 
   }

@@ -24,7 +24,6 @@ class Synthesis extends Extend{
   init(data) {
     this.data = data
     const type = this.get_string('type', this.data['settings'])
-    console.log('synthesis init')
 
     this.settings.init(this.data['settings'])
     this.filter.init(this.data['filter'], type)
@@ -34,7 +33,6 @@ class Synthesis extends Extend{
   update(data) {
     this.data = data
     const type = this.get_string('type', this.data['settings'])
-    console.log('synthesis data')
 
     this.settings.update(this.data['settings'])
     this.filter.update(this.data['filter'], type)

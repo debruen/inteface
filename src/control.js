@@ -73,13 +73,11 @@ class Controls extends Extend{
 
     this.record_button.addEventListener("click", () => {
       if (!this.data.record) {
-        console.log('control record');
         this.data.record = true
         this.record_button.innerHTML = "saving ..."
         this.record_button.style.cursor = 'default';
         (async () => {
           this.data.record = await ipcRenderer.invoke('record')
-          console.log('data record: ' + this.data.record)
           this.record_button.innerHTML = "save"
           this.record_button.style.cursor = 'pointer'
         })()
@@ -89,7 +87,6 @@ class Controls extends Extend{
   }
 
   controls() {
-
     if (this.data.play)
       this.play_button.innerHTML = "pause"
     else

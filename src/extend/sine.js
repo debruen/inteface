@@ -24,11 +24,6 @@ class Sine extends Extend{
 
     this.div    = this.parentDiv()
 
-    // this.shape = document.createElement('DIV')
-    // this.shape.style.display = 'block'
-    // this.shape.style.marginRight = this.margin + 'px'
-    // this.shape.style.marginTop = smallMargin + 'px'
-
     this.shapeLabel = document.createElement('LABEL')
     this.shapeLabel.style.marginRight = smallMargin + 'px'
 
@@ -36,8 +31,6 @@ class Sine extends Extend{
 
     this.div.appendChild(this.shapeLabel)
     this.div.appendChild(this.shapeSelect)
-
-    // this.div.appendChild(this.shape)
 
     this.canvas = this.canvasForm()
 

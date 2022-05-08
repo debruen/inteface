@@ -31,7 +31,7 @@ function createWindow () {
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
 }
 
 // This method will be called when Electron has finished
@@ -88,14 +88,18 @@ ipcMain.on('data-control', async (err, data) => {
   mainWindow.webContents.send('data-control', result)
 })
 
-
 ipcMain.handle('record', async (event) => {
-  return image = await program.record()
+  return await program.record()
 })
 
-ipcMain.handle('display', async (event, data, image) => {
-  if(await program.display(data, image)) {
-    return image
+ipcMain.handle('display', async (event, data, image, left, right) => {
+  if(await program.display(data, image, left, right)) {
+    const result = {
+      image: image,
+      left: left,
+      right: right
+    }
+    return result
   }
 })
 

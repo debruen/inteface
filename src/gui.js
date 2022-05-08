@@ -21,6 +21,7 @@ class Gui extends Extend{
       audio: 60,
       ratio: 0.5,
       direction: 'up',
+      stereo: 'lr',
       font: parseFloat(window.getComputedStyle(document.body).fontSize)
     }
 
@@ -66,6 +67,7 @@ class Gui extends Extend{
     })
 
     this.display.on('done', async (data) => {
+      console.log('done')
       this.control.data.play = false
       this.control.controls()
     })

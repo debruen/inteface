@@ -8,6 +8,51 @@ class Extend extends Events {
 
   }
 
+  column_div() {
+
+    const div = document.createElement('div')
+    div.style.display = 'block'
+    div.style.width = this.column - this.margin + 'px'
+    div.style.margin = this.margin + 'px'
+
+    document.body.appendChild(div)
+
+    return div
+  }
+
+  headDiv() {
+
+    const parent = this.div
+
+    const div = document.createElement('div')
+    div.style.position = 'relative'
+    div.style.display = 'block'
+    div.style.width = this.settingsWidth - this.margin + 'px'
+    div.style.fontWeight = 'bold'
+    div.style.borderBottom = '1px solid currentcolor'
+    div.innerHTML = this.name
+
+    const hide = document.createElement('span')
+    hide.style.position = 'absolute'
+    hide.style.display = 'block'
+    hide.style.left = this.settingsWidth - this.margin - 16 + 'px'
+    hide.style.top = '0px'
+    hide.style.cursor = 'pointer'
+    hide.style.color = 'red'
+
+    hide.innerHTML = '△'
+
+    div.appendChild(hide)
+
+    parent.appendChild(div)
+
+    hide.addEventListener('click', () => {
+      this.hideDiv(parent, hide)
+    })
+
+    return div
+  }
+
   project(min, max, norm) {
     return (norm * (max - min)) + min
   }

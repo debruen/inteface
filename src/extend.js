@@ -95,6 +95,19 @@ class Extend extends Events {
     return div
   }
 
+  mainDiv() {
+
+    const div = document.createElement('div')
+    div.style.display = 'block'
+    div.style.width = this.settingsWidth - this.margin + 'px'
+    div.style.margin = this.margin + 'px'
+    // div.style.border = '1px solid currentcolor'
+
+    document.body.appendChild(div)
+
+    return div
+  }
+
   parentDiv() {
 
     const div = document.createElement('div')
@@ -194,6 +207,10 @@ class Extend extends Events {
     canvas.height = this.audio / 3 * 2
 
     return canvas
+  }
+
+  isArray(data) {
+    return Object.prototype.toString.call(data) === '[object Array]';
   }
 
   get_string(name, data = this.data) {

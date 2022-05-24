@@ -38,24 +38,34 @@ class Sine extends Extend{
 
     this.labelA = document.createElement('LABEL')
     this.labelA.style.marginRight = smallMargin
-
-    this.rangeA = document.createElement('INPUT')
-    this.rangeA.type = 'range'
-    this.rangeA.style.width = rangeWidth
-    this.rangeA.style.marginRight = smallMargin
-    this.rangeA.min = 0
-    this.rangeA.max = 1
-    this.rangeA.step = 0.0001
+    this.labelA.style.width = '64px'
 
     this.valueA = document.createElement('SPAN')
     this.valueA.style.display = 'inline-block'
-    this.valueA.style.textAlign = 'right'
-    this.valueA.style.width = valueWidth
-    this.valueA.style.paddingRight = smallMargin
+    // this.valueA.style.textAlign = 'right'
+    this.valueA.style.width = 'calc(100% - ' + 68 + 'px)'
+
+    this.rangeA = document.createElement('INPUT')
+    this.rangeA.type = 'range'
+    this.rangeA.min = 0
+    this.rangeA.max = 1
+    this.rangeA.step = 0.0001
+    // this.rangeA.style.margin = '-0.5%'
+    this.rangeA.style.width = '100%'
 
     this.div.appendChild(this.labelA)
-    this.div.appendChild(this.rangeA)
     this.div.appendChild(this.valueA)
+    this.div.appendChild(this.rangeA)
+
+    this.freqScale = document.createElement('DIV')
+    this.freqScale.style.display = 'inline-block'
+    this.freqScale.style.width = 'calc(100% - ' + 2 + 'px)'
+    this.freqScale.style.border = '1px solid #000'
+    this.freqScale.style.height = '10px'
+
+
+    this.div.appendChild(this.freqScale)
+
 
     this.labelB = document.createElement('LABEL')
     this.labelB.style.marginRight = smallMargin
@@ -99,6 +109,27 @@ class Sine extends Extend{
     this.div.appendChild(this.rangeC)
     this.div.appendChild(this.valueC)
 
+    this.tiltLabel = document.createElement('LABEL')
+    this.tiltLabel.style.marginRight = smallMargin
+
+    this.tiltRange = document.createElement('INPUT')
+    this.tiltRange.type = 'range'
+    this.tiltRange.style.width = rangeWidth
+    this.tiltRange.style.marginRight = smallMargin
+    this.tiltRange.min = 0
+    this.tiltRange.max = 1
+    this.tiltRange.step = 0.001
+
+    this.tiltValue = document.createElement('SPAN')
+    this.tiltValue.style.display = 'inline-block'
+    this.tiltValue.style.textAlign = 'right'
+    this.tiltValue.style.width = valueWidth
+    this.tiltValue.style.paddingRight = smallMargin
+
+    this.div.appendChild(this.tiltLabel)
+    this.div.appendChild(this.tiltRange)
+    this.div.appendChild(this.tiltValue)
+
     parent.appendChild(this.div)
 
     this.data
@@ -139,6 +170,10 @@ class Sine extends Extend{
     this.labelC.for = 'phase'
     this.rangeC.name = 'phase'
 
+    this.tiltLabel.innerHTML = 'tilt: '
+    this.tiltLabel.for = 'tilt'
+    this.tiltRange.name = 'tilt'
+
     this.update()
 
     this.listener()
@@ -153,6 +188,8 @@ class Sine extends Extend{
     this.rangeB.value      = this.get_num('amplitude')
     this.rangeC.value      = this.get_num('phase')
 
+    this.tiltRange.value = this.get_num('tilt')
+
     this.draw()
   } // update
 
@@ -164,12 +201,14 @@ class Sine extends Extend{
     let frequency = Math.pow(this.rangeA.value, freqGamma) * (this.freqMax - this.freqMin) + this.freqMin
 
     if (frequency < 10) {
-      frequency = Math.round(frequency * 10000) / 10000
+      frequency = Math.round(frequency * 100000) / 100000
     } else if (frequency < 100) {
-      frequency = Math.round(frequency * 1000) / 1000
+      frequency = Math.round(frequency * 10000) / 10000
     } else if (frequency < 1000) {
-      frequency = Math.round(frequency * 100) / 100
+      frequency = Math.round(frequency * 1000) / 1000
     } else if (frequency < 10000) {
+      frequency = Math.round(frequency * 100) / 100
+    } else if (frequency < 100000) {
       frequency = Math.round(frequency * 10) / 10
     } else {
       frequency = Math.round(frequency)
@@ -179,9 +218,12 @@ class Sine extends Extend{
 
     const phase = Math.round((this.rangeC.value) * 100) / 100
 
-    this.valueA.innerHTML = frequency
+    const tilt = this.tiltRange.value * 360 + '°'
+
+    this.valueA.innerHTML = frequency + ' Hz'
     this.valueB.innerHTML = amplitude
     this.valueC.innerHTML = phase
+    this.tiltValue.innerHTML = tilt
 
     this.plotSine(shape, frequency, amplitude, phase)
 
@@ -264,45 +306,48 @@ class Sine extends Extend{
     this.rangeC.addEventListener('input', () => {
        this.draw()
     }, false)
+    this.tiltRange.addEventListener('input', () => {
+       this.draw()
+    }, false)
 
     this.shapeSelect.addEventListener("change", () => {
-
       const data = this.get_data('shape')
       data.value = this.shapeSelect.value
 
       this.update_data(data)
       this.emit('update', this.data)
-
     })
 
     this.rangeA.addEventListener('change', () => {
-
       const data = this.get_data('frequency')
       data.value = parseFloat(this.rangeA.value)
 
       this.update_data(data)
       this.emit('update', this.data)
-
     }, false)
 
     this.rangeB.addEventListener('change', () => {
-
       const data = this.get_data('amplitude')
       data.value = parseFloat(this.rangeB.value)
 
       this.update_data(data)
       this.emit('update', this.data)
-
     }, false)
 
     this.rangeC.addEventListener('change', () => {
-
       const data = this.get_data('phase')
       data.value = parseFloat(this.rangeC.value)
 
       this.update_data(data)
       this.emit('update', this.data)
+    }, false)
 
+    this.tiltRange.addEventListener('change', () => {
+      const data = this.get_data('tilt')
+      data.value = parseFloat(this.tiltRange.value)
+
+      this.update_data(data)
+      this.emit('update', this.data)
     }, false)
 
   } // listener

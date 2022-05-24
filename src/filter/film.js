@@ -32,11 +32,12 @@ class Film extends Extend {
 
     // this.array = []
 
-    if(this.type == 'audio') {
-      this.film = new Sine(this.options, this.div)
-      this.film.init(this.data)
-    } else {
+    if(this.type == 'image') {
       this.film = new Spectrum(this.options, this.div)
+      this.film.init(this.data)
+
+    } else {
+      this.film = new Sine(this.options, this.div)
       this.film.init(this.data)
     }
 

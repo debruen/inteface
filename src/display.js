@@ -130,34 +130,36 @@ class Display extends Extend{
     this.outRight.height = audioHeight
 
     const density = window.devicePixelRatio;
-    const imageBuffer = new ArrayBuffer((imageWidth * density) * (imageHeight * density) * 4)
+    const imageBuffer = new ArrayBuffer((imageWidth) * (imageHeight) * 4)
     const image = new Uint8ClampedArray(imageBuffer)
 
-    const leftBuffer = new ArrayBuffer((audioWidth * density) * (audioHeight * density) * 4)
+    const leftBuffer = new ArrayBuffer((audioWidth) * (audioHeight) * 4)
     const left = new Uint8ClampedArray(leftBuffer)
 
-    const rightBuffer = new ArrayBuffer((audioWidth * density) * (audioHeight * density) * 4)
+    const rightBuffer = new ArrayBuffer((audioWidth) * (audioHeight) * 4)
     const right = new Uint8ClampedArray(rightBuffer)
 
     const data = {
-      imageWidth: imageWidth * density,
-      imageHeight: imageHeight * density,
-      audioWidth: audioWidth * density,
-      audioHeight: audioHeight * density,
+      imageWidth: imageWidth,
+      imageHeight: imageHeight,
+      audioWidth: audioWidth,
+      audioHeight: audioHeight,
     };
 
     (async () => {
       const frame = await ipcRenderer.invoke('display', data, image, left, right)
 
-      const imageData = await new ImageData(frame.image, imageWidth * density, imageHeight * density)
+      console.log(data)
+
+      const imageData = await new ImageData(frame.image, imageWidth, imageHeight)
       const imageCtx = await this.canvas.getContext("2d")
       imageCtx.putImageData(imageData, 0, 0)
 
-      const leftData = await new ImageData(frame.left, audioWidth * density, audioHeight * density)
+      const leftData = await new ImageData(frame.left, audioWidth, audioHeight)
       const leftCtx = await this.outLeft.getContext("2d")
       leftCtx.putImageData(leftData, 0, 0)
 
-      const rightData = await new ImageData(frame.right, audioWidth * density, audioHeight * density)
+      const rightData = await new ImageData(frame.right, audioWidth, audioHeight)
       const rightCtx = await this.outRight.getContext("2d")
       rightCtx.putImageData(rightData, 0, 0)
 

@@ -35,22 +35,34 @@ class Filter extends Extend{
     this.type = type
     this.data = data
 
+    console.log(data)
+
+    const display = this.get_string('display')
+    const name = this.get_string('name')
+
     let div = this.div.querySelectorAll('div')
     for(let i = 1; i < div.length; i++) {
       div[i].parentNode.removeChild(div[i])
     }
 
+  if (display) {
+
     this.array = []
 
-    this.data.forEach((item, i) => {
-      this.array.push(new Layer(this.options, this.div))
-      this.array[i].init(item, type)
-    })
-
-    if(this.data.length == 0) {
+    if(this.data.length <= 2) {
       this.array.push(new Layer(this.options, this.div))
       this.array[0].init()
+    } else {
+      let c = 0
+      this.data.forEach((item, i) => {
+        if (this.isArray(item)) {
+          this.array.push(new Layer(this.options, this.div))
+          this.array[c].init(item, type)
+          c++
+        }
+      })
     }
+  }
 
     this.comline()
   } // update END

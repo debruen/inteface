@@ -1,33 +1,18 @@
-// Modules to control application life and create native browser window
+
 const {app, BrowserWindow, ipcMain} = require('electron')
-const path = require('path')
 
-
-// --- --- --- --- --- --- * --- --- --- --- --- ---
-
-
-const Program = require('program')
-const program = new Program
-
-
-// --- --- --- --- --- --- * --- --- --- --- --- ---
-
-
-let mainWindow
-
-function createWindow () {
+function createWindow() {
   // Create the browser window.
-  mainWindow = new BrowserWindow({
+  const mainWindow = new BrowserWindow({
     width: 1300,
     height: 800,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      nativeWindowOpen: true,
       nodeIntegration: true,
       contextIsolation: false
     }
   })
 
+  // and load the index.html of the app.
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
@@ -39,7 +24,6 @@ function createWindow () {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow()
-
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
@@ -47,63 +31,12 @@ app.whenReady().then(() => {
   })
 })
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', async () => {
+// Quit when all windows are closed.
+app.on('window-all-closed', function () {
+  // On macOS it is common for applications and their menu bar
+  // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') app.quit()
 })
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
-
-
-// --- --- --- --- --- --- * --- --- --- --- --- ---
-
-
-let r = true
-
-ipcMain.on('init-synthesis', async () => {
-  const result = await program.initSynthesis()
-  mainWindow.webContents.send('init-synthesis', result)
-})
-
-ipcMain.on('data-synthesis', async (err, data) => {
-  const result = await program.dataSynthesis(data)
-  mainWindow.webContents.send('data-synthesis', result)
-})
-
-ipcMain.on('new-frame', async (err) => {
-  const result = await program.newFrame()
-  mainWindow.webContents.send('new-frame', result)
-})
-
-ipcMain.on('init-control', async (err, data) => {
-  const result = await program.initControl()
-  mainWindow.webContents.send('init-control', result)
-})
-
-ipcMain.on('data-control', async (err, data) => {
-  const result = await program.dataControl(data)
-  mainWindow.webContents.send('data-control', result)
-})
-
-ipcMain.handle('record', async (event) => {
-  return await program.record()
-})
-
-ipcMain.handle('display', async (event, data, image, left, right) => {
-  if(await program.display(data, image, left, right)) {
-    const result = {
-      image: image,
-      left: left,
-      right: right
-    }
-    return result
-  }
-})
-
-app.on('will-quit', async () => {
-  // await mainWindow.webContents.send('quit-display')
-  const result = await program.quit()
-})

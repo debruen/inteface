@@ -1,26 +1,27 @@
 {
-  "name": "interface",
+  "name": "IA",
   "version": "0.0.0",
-  "description": "",
+  "description": "image audio conversion",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
-  },
-  "devDependencies": {
-    "electron": "^20.3.11"
-  },
-  "dependencies": {
-    "p5": "^1.4.1",
-    "program": "../program"
+    "start": "electron .",
+    "build": "electron-packager ./ --overwrite"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/debruen/interface.git"
+    "url": "git+https://github.com/whyturbocharge/image-audio.git"
   },
   "author": "Florian de Brün",
-  "license": "",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/debruen/interface/issues"
+    "url": "https://github.com/whyturbocharge/image-audio/issues"
   },
-  "homepage": "https://github.com/debruen/interface"
+  "homepage": "https://github.com/whyturbocharge/image-audio#readme",
+  "devDependencies": {
+    "electron": "^13.2.0"
+  },
+  "dependencies": {
+    "ia": "../program-main",
+    "mathjax-electron": "^3.0.0"
+  }
 }

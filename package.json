@@ -1,6 +1,6 @@
 {
-  "name": "interface",
-  "version": "0.0.0",
+  "name": "interface 0.1",
+  "version": "0.0.1",
   "description": "",
   "main": "main.js",
   "scripts": {
@@ -22,6 +22,6 @@
   },
   "dependencies": {
     "d3-color": "^3.0.1",
-    "program": "../program-p"
+    "program": "../program"
   }
 }

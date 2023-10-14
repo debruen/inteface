@@ -3,119 +3,77 @@ const { ipcRenderer } = require('electron')
 
 const Extend = require('./extend.js')
 
-const Settings = require('./settings.js')
-const Filter  = require('./filter.js')
-const Output  = require('./output.js')
-const Preview = require('./preview.js')
+const Synthesis = require('./synthesis.js')
+
+const Control = require('./control.js')
+
+const Display  = require('./display.js')
 
 class Gui extends Extend{
 
-  constructor(options) {
+  constructor() {
     super()
 
-    this.options = {
+    const global_data = {
       settingsWidth: 600,
+      column: 600,
       margin: 10,
       audio: 60,
+      ratio: 0.5,
+      direction: 'up',
+      stereo: 'lr',
       font: parseFloat(window.getComputedStyle(document.body).fontSize)
     }
 
-    this.settings   = new Settings(this.options)
-    this.filter  = new Filter(this.options)
-    this.output  = new Output(this.options)
-    this.preview = new Preview(this.options)
-
-    this.type
-
-    this.data
-
-    this.init()
-  } // constructor
-
-  init() {
-    ipcRenderer.send('io-init')
+    this.synthesis = new Synthesis(global_data)
+    this.control = new Control(global_data)
+    this.display = new Display(global_data)
 
     this.comline()
-  } // init
 
-  update() {
-    ipcRenderer.send('io-update', this.data)
-  } // sendData
-
-  process() {
-    ipcRenderer.send('io-preview', this.preview.images, this.preview.left, this.preview.right)
-  } // sendBuffer
-
-  save() {
-    ipcRenderer.send('io-save')
   }
 
   comline() {
 
-    this.settings.on('update', (data) => {
-      this.data.settings = data;
-      this.update()
+    // --- synthesis
+    ipcRenderer.send('init-synthesis')
+
+    ipcRenderer.on('init-synthesis', (event, data) => {
+      this.synthesis.init(data)
+      this.display.draw()
     })
 
-    this.filter.on('update', (data) => {
-      this.data.filter = data;
-      this.update()
+    this.synthesis.on('data-synthesis', async (data) => {
+      ipcRenderer.send('data-synthesis', data)
     })
 
-    this.output.on('update', (data) => {
-      this.data.output = data;
-      this.update()
+    ipcRenderer.on('data-synthesis', (event, data) => {
+      this.synthesis.update(data)
+      this.display.draw()
     })
 
-    this.output.on('save', () => {
-      this.save()
+    ipcRenderer.send('init-control')
+
+    ipcRenderer.on('init-control', (event, data) => {
+      this.control.init(data)
     })
 
-    // data init
-    ipcRenderer.on('oi-init', (event, result) => {
-
-      this.data = result
-      this.type = this.get_string('type', this.data['settings'])
-
-      this.settings.init(this.data['settings'])
-      this.filter.init(this.data['filter'], this.type)
-      this.output.init(this.data['output'])
-
+    this.control.on('data-control', async (data) => {
+      ipcRenderer.send('data-control', data)
     })
 
-    // data update
-    ipcRenderer.on('oi-update', (event, result) => {
-
-      this.data = result
-      this.type = this.get_string('type', this.data['settings'])
-
-      this.settings.update(this.data['settings'])
-      this.filter.update(this.data['filter'], this.type)
-      this.output.update(this.data['output'])
-
-      this.preview.update(this.data['settings']);
-
-      this.process()
+    ipcRenderer.on('data-control', (event, data) => {
+      this.control.update(data)
     })
 
-    // preview
-    ipcRenderer.on('oi-preview', (event, images, left, right) => {
-
-      this.preview.images = images
-      this.preview.left = left
-      this.preview.right = right
-
-      this.preview.draw()
-
-      // update buffer (image and audio)
+    this.display.on('done', async (data) => {
+      console.log('done')
+      this.control.data.play = false
+      this.control.controls()
     })
 
-    // save
-    ipcRenderer.on('oi-save', (event, result) => {
-      console.log(result)
-    })
-  } // comline
+  }
 
-} // Gui
+}
 
 module.exports = Gui

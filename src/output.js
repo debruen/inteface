@@ -27,7 +27,6 @@ class Output extends Extend{
   } // constructor END
 
   init(data) {
-
     this.data = data
 
     let i = 0
@@ -53,7 +52,6 @@ class Output extends Extend{
   } // init
 
   update(data = this.data) {
-
     this.data = data
 
     this.data.forEach((d, i) => {

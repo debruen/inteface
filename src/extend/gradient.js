@@ -82,7 +82,7 @@ class Gradient extends Extend{
     this.phasRange.type = 'range'
     this.phasRange.style.width = rangeWidth
     this.phasRange.style.marginRight = smallMargin
-    this.phasRange.min = -1
+    this.phasRange.min = 0
     this.phasRange.max = 1
     this.phasRange.step = 0.01
 
@@ -195,8 +195,6 @@ class Gradient extends Extend{
 
   update(data = this.data) {
 
-    console.log(data)
-
     this.data = data
 
     this.shapeSelect.value = this.get_string('shape')
@@ -277,12 +275,6 @@ class Gradient extends Extend{
     let ph_pat = parseFloat((phase - 1 / Math.pow(ypsi, ypsi)).toFixed(10))
 
     let phse_pat = width / frequency * ph_pat * (-1)
-
-    console.log("phase input: " + phase)
-
-    console.log("phase pattern: " + ph_pat )
-
-    console.log("phase real: " + phse_pat)
 
     let prev, temp_signal
 

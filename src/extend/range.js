@@ -13,15 +13,19 @@ class Range extends Extend{
 
     this.div = this.parentDiv()
 
-    this.name = document.createElement('LABEL')
-    this.name.style.marginRight = options.margin / 2 + 'px'
+    this.name = document.createElement('label')
+    this.name.style.display = 'inline-block'
+    this.name.style.marginRight = this.margin / 2 + 'px'
+    this.name.style.width = '64px'
 
-    this.range = document.createElement('INPUT')
+    this.range = document.createElement('input')
     this.range.type = 'range'
-    this.range.style.marginRight = options.margin / 2 + 'px'
+    this.range.style.marginRight = this.margin / 2 + 'px'
+    this.range.style.width = 'calc(100% - ' + (144 + this.margin) + 'px)'
 
-    this.value = document.createElement('SPAN')
+    this.value = document.createElement('span')
     this.value.style.display = 'inline-block'
+    this.value.style.width = '80px'
     this.value.style.textAlign = 'right'
 
     this.div.appendChild(this.name)
@@ -48,12 +52,9 @@ class Range extends Extend{
 
     if(data.type == 'int') {
       this.range.step = 1
-      this.value.style.width = '14px'
     } else if(data.type == 'time') {
       this.range.step = 250
-      this.value.style.width = '64px'
     } else {
-      this.value.style.width = '22px'
       this.range.step = 0.00001
     }
 

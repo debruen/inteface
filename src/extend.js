@@ -8,6 +8,51 @@ class Extend extends Events {
 
   }
 
+  column_div() {
+
+    const div = document.createElement('div')
+    div.style.display = 'block'
+    div.style.width = this.column - this.margin + 'px'
+    div.style.margin = this.margin + 'px'
+
+    document.body.appendChild(div)
+
+    return div
+  }
+
+  headDiv() {
+
+    const parent = this.div
+
+    const div = document.createElement('div')
+    div.style.position = 'relative'
+    div.style.display = 'block'
+    div.style.width = this.settingsWidth - this.margin + 'px'
+    div.style.fontWeight = 'bold'
+    div.style.borderBottom = '1px solid currentcolor'
+    div.innerHTML = this.name
+
+    const hide = document.createElement('span')
+    hide.style.position = 'absolute'
+    hide.style.display = 'block'
+    hide.style.left = this.settingsWidth - this.margin - 16 + 'px'
+    hide.style.top = '0px'
+    hide.style.cursor = 'pointer'
+    hide.style.color = 'red'
+
+    hide.innerHTML = '△'
+
+    div.appendChild(hide)
+
+    parent.appendChild(div)
+
+    hide.addEventListener('click', () => {
+      this.hideDiv(parent, hide)
+    })
+
+    return div
+  }
+
   project(min, max, norm) {
     return (norm * (max - min)) + min
   }
@@ -35,6 +80,19 @@ class Extend extends Events {
       }
 
     }
+  }
+
+  mainDiv() {
+
+    const div = document.createElement('div')
+    div.style.display = 'block'
+    div.style.width = this.settingsWidth - this.margin + 'px'
+    div.style.margin = this.margin + 'px'
+    // div.style.border = '1px solid currentcolor'
+
+    document.body.appendChild(div)
+
+    return div
   }
 
   mainDiv() {
@@ -151,6 +209,10 @@ class Extend extends Events {
     return canvas
   }
 
+  isArray(data) {
+    return Object.prototype.toString.call(data) === '[object Array]';
+  }
+
   get_string(name, data = this.data) {
     const index = data.findIndex(x => x.name == name)
 
@@ -181,28 +243,14 @@ class Extend extends Events {
     return this.data[index]
   }
 
-  compute_size(name) {
-    const index = this.data.findIndex(x => x.name == name)
-    const ratio = this.data.find(x => x.name == 'ratio')
-    const direction = this.data.find(x => x.name == 'direction')
+  data_update(data, name, value) {
 
-    let width, height
-    /// calculating display dimensions
-    if (direction.value == 'right' || direction.value == 'left') {
-      height = Math.round(window.innerHeight - ( this.options.audio * 3 + this.options.margin * 5 ))
-      width  = Math.round(height * ratio.value)
-    } else {
-      height = Math.round(window.innerHeight - ( this.options.audio + this.options.margin * 3 ))
-      width  = Math.round(height * ratio.value)
-    }
+    const index = data.findIndex(d => d.name == name)
 
-    // /// calculating display dimensions
-    // const height = Math.round(window.innerHeight - ( this.options.audio + this.options.margin * 3 ))
-    // const width  = Math.round(height * ratio.value)
+    /// writing data to data
+    data[index].value = value;
 
-    /// writing display dimensions to data
-    this.data[index].width  = width
-    this.data[index].height = height
+    return data
   }
 
   update_data(data) {

@@ -1,6 +1,6 @@
 {
-  "name": "interface 0.2",
-  "version": "0.0.0",
+  "name": "interface 0.3",
+  "version": "0.3.0",
   "description": "",
   "main": "main.js",
   "scripts": {
@@ -8,9 +8,10 @@
     "build": "electron-packager ./ --overwrite"
   },
   "devDependencies": {
-    "electron": "^14.0.1"
+    "electron": "^20.3.11"
   },
   "dependencies": {
+    "p5": "^1.4.1",
     "program": "../program"
   },
   "repository": {

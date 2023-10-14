@@ -208,8 +208,6 @@ class Color extends Events{
         gradientA.addColorStop(i / 360, 'hsl(' + i + ', ' + s + '%, ' + l + '%)')
       }
 
-      console.log(gradientA);
-
       gradientB.addColorStop(0, 'hsl(' + h + ', 0%, ' + l + '%)')
       gradientB.addColorStop(1, 'hsl(' + h + ', 100%, ' + l + '%)')
 
@@ -297,7 +295,6 @@ class Color extends Events{
 
       clearTimeout(timeout)
       timeout = setTimeout(() => {
-        console.log(this.data.label + ' update')
         this.emit('update', this.data)
       }, delay)
 
@@ -309,7 +306,6 @@ class Color extends Events{
 
       clearTimeout(timeout)
       timeout = setTimeout(() => {
-        console.log(this.data.label + ' update')
         this.emit('update', this.data)
       }, delay)
 
@@ -321,7 +317,6 @@ class Color extends Events{
 
       clearTimeout(timeout)
       timeout = setTimeout(() => {
-        console.log(this.data.label + ' update')
         this.emit('update', this.data)
       }, delay)
 

@@ -1,17 +1,18 @@
-<!DOCTYPE html><html><head>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval'; media-src blob:">
 
-  <meta charset="UTF-8">
+    <link rel="stylesheet" href="./css/normalize.css">
+    <link rel="stylesheet" href="./css/style.css">
 
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src data: blob: 'unsafe-inline' 'self'; script-src 'self'; style-src 'unsafe-inline' 'self'; media-src blob:">
+    <title>Hello World!</title>
+  </head>
+  <body>
 
-  <link rel="stylesheet" href="./normalize.css">
-  <link rel="stylesheet" href="./style.css">
-
-  <title>program <-> interface</title>
-
-</head><body>
-
-  <!-- You can also require other files to run in this process -->
-  <script src="./renderer.js"></script>
-
-</body></html>
+    <!-- You can also require other files to run in this process -->
+    <script src="./renderer.js"></script>
+  </body>
+</html>

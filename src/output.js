@@ -1,29 +1,22 @@
 
-const Select = require('./elements/select.js')
-const Range  = require('./elements/range.js')
-const Button  = require('./elements/button.js')
+const Extend = require('./extend.js')
 
-const Events = require('events')
+const Select = require('./extend/select.js')
+const Range  = require('./extend/range.js')
+const Button  = require('./extend/button.js')
 
-class Output extends Events{
+class Output extends Extend{
 
   constructor(options) {
     super()
 
-    this.div = document.createElement('DIV')
-    this.div.style.display = 'block'
-    this.div.style.width = options.width - options.margin + 'px'
-    this.div.style.margin = options.margin + 'px'
-    document.body.appendChild(this.div)
+    this.id            = 'output'
+    this.name          = 'output'
+    this.settingsWidth = options.settingsWidth
+    this.margin        = options.margin
 
-    this.headline = document.createElement('div')
-    this.headline.style.display = 'block'
-    this.headline.style.width = '100%'
-    this.headline.style.fontWeight = 'bold'
-    // this.headline.style.marginBottom = options.margin + 'px'
-    this.headline.style.borderBottom = '1px solid currentcolor'
-    this.headline.innerHTML = "output"
-    this.div.appendChild(this.headline)
+    this.div      = this.mainDiv()
+    this.headline = this.headDiv()
 
     this.options = options
 
@@ -37,18 +30,22 @@ class Output extends Events{
 
     this.data = data
 
+    let i = 0
     this.data.forEach((d, i) => {
-      if(d.select == "select") {
+      if(d.form == "select") {
         this.array.push(new Select(this.options, this.div))
         this.array[i].init(d)
+        i++
       }
-      if(d.select == "range") {
+      if(d.form == "range") {
         this.array.push(new Range(this.options, this.div))
         this.array[i].init(d)
+        i++
       }
-      if(d.select == "button") {
+      if(d.form == "button") {
         this.array.push(new Button(this.options, this.div))
         this.array[i].init(d)
+        i++
       }
     })
 
@@ -70,8 +67,15 @@ class Output extends Events{
     this.data.forEach((d, i) => {
 
       this.array[i].on('update', (data) => {
-        this.data[i].value = data.value
-        this.emit('update', this.data)
+
+        if (this.data[i].name == 'save') {
+          this.data[i].value = false
+          this.emit('save')
+        } else {
+          this.data[i].value = data.value
+          this.emit('update', this.data)
+        }
+
       })
 
     })

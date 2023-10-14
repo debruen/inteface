@@ -1,28 +1,22 @@
 
 const Events = require('events')
 
-class Select extends Events{
+class Button extends Events{
 
   constructor(options, div) {
     super()
 
     this.data
 
-    options = options
-
     this.div = document.createElement('DIV')
     this.div.style.display = 'inline-block'
     this.div.style.marginRight = options.margin + 'px'
     this.div.style.marginTop = options.margin / 2 + 'px'
 
-    this.label = document.createElement('LABEL')
-    this.label.style.marginRight = options.margin / 2 + 'px'
+    this.button = document.createElement('BUTTON')
+    this.button.type = 'button'
 
-    this.select = document.createElement('SELECT')
-
-    this.div.appendChild(this.label)
-    this.div.appendChild(this.select)
-
+    this.div.appendChild(this.button)
     div.appendChild(this.div)
 
   } // constructor
@@ -30,17 +24,6 @@ class Select extends Events{
   init(data) {
 
     this.data = data
-
-    this.label.innerHTML = data.label + ':'
-    this.label.for = data.label
-
-    this.select.name = data.label
-    for (var i = 0; i < data.options.length; i++) {
-      let option = document.createElement("option")
-      option.text = data.options[i]
-      option.value = data.options[i]
-      this.select.add(option)
-    }
 
     this.update()
 
@@ -51,7 +34,7 @@ class Select extends Events{
 
     this.data = data
 
-    this.select.value = this.data.value
+    this.button.innerHTML = data.name
 
   } // update
 
@@ -60,12 +43,12 @@ class Select extends Events{
     let timeout = false   // holder for timeout id
     const delay = Math.floor(Math.random() * 10)     // delay after event is "complete" to run callback
 
-    this.select.addEventListener("change", () => {
-      this.data.value = this.select.value
+    this.button.addEventListener("click", () => {
+      this.data.value = true
 
       clearTimeout(timeout)
       timeout = setTimeout(() => {
-        console.log(this.data.label + ' update')
+        console.log(this.data.name + ' update')
         this.emit('update', this.data)
       }, delay)
     })
@@ -74,4 +57,4 @@ class Select extends Events{
 
 } // Select
 
-module.exports = Select
+module.exports = Button

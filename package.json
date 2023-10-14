@@ -21,7 +21,7 @@
     "electron": "^13.2.0"
   },
   "dependencies": {
-    "ia": "../program-main",
+    "ia": "../program",
     "mathjax-electron": "^3.0.0"
   }
 }

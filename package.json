@@ -1,5 +1,5 @@
 {
-  "name": "interface 0.3",
+  "name": "interface",
   "version": "0.3.0",
   "description": "",
   "main": "main.js",
@@ -12,16 +12,16 @@
   },
   "dependencies": {
     "p5": "^1.4.1",
-    "program": "../program"
+    "program": "whytchrg/program#main"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/debruen/interface.git"
+    "url": "git+https://github.com/whytchrg/interface.git"
   },
   "author": "Florian de Brün",
   "license": "",
   "bugs": {
-    "url": "https://github.com/debruen/interface/issues"
+    "url": "https://github.com/whytchrg/interface/issues"
   },
-  "homepage": "https://github.com/debruen/interface"
+  "homepage": "https://github.com/whytchrg/interface"
 }
